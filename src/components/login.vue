@@ -24,35 +24,63 @@
 </template>
 
 <script>
-export default {
-  components: {
+  export default {
+    components: {
 
-  },
-  data () {
-    return {
-      formdata: {
-        username: '',
-        password: ''
+    },
+    data () {
+      return {
+        formdata: {
+          username: '',
+          password: ''
+        }
       }
-    }
-  },
-  methods: {
-    handleLogin () {
-      this.$http.post('login', this.formdata).then((res) => {
+    },
+    methods: {
+      // 之前:异步操作的结果必须出现.then方法里面-->嵌套
+      // 现在希望: 让异步代码看起来像同步, 好处: 没有函数嵌套
+      // 解决办法：Es7的新特性 async,await
+      async handleLogin () {
+        const res = await this.$http.post('login', this.formdata)
         console.log(res)
-        const { data: { data, meta: { msg, status } } } = res
+        const { data: { data: {token}, meta: { msg, status } } } = res
         if (status == 200) {
-          this.$message({
-            message: msg,
-            type: 'success'
+          // this.$message({
+          //   message: msg,
+          //   type: 'success'
+          // })
+          // 保存token值
+          localStorage.setItem('token',token)
+          // 登录成功后，跳到主页
+          // 渲染home.vue组件-->改标识---js改标识
+          this.$router.push({
+            name: 'home'
           })
         } else {
           this.$message.error(msg)
         }
-      })
+
+        // .then之后其实在处理异步请求的结果
+        // .then((res) => {
+        //   console.log(res)
+        //   const { data: { data, meta: { msg, status } } } = res
+        //   if (status == 200) {
+        //     // this.$message({
+        //     //   message: msg,
+        //     //   type: 'success'
+        //     // })
+        //     // 登录成功后，跳到主页
+        //     // 渲染home.vue组件-->改标识---js改标识
+        //     this.$router.push({
+        //       name: 'home'
+        //     })
+        //   } else {
+        //     this.$message.error(msg)
+        //   }
+        // })
+      }
     }
   }
-}
 </script>
 
 <style>

@@ -47,7 +47,7 @@
               <span>用户管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="1-1">
+              <el-menu-item index="user">
                 <i class="el-icon-menu"></i>
                 <span>用户列表</span>
               </el-menu-item>
@@ -124,55 +124,58 @@
         </el-menu>
       </el-aside>
       <!-- 右侧主体内容 -->
-      <el-main class="main">Main</el-main>
+      <el-main class="main">
+        <!-- 展示对应的内容 -->
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
-export default {
-  components: {
+  export default {
+    components: {
 
-  },
-  data () {
-    return {
+    },
+    data () {
+      return {
 
-    }
-  },
-  beforeMount () {
-    // 进入首页权限验证
-    // 思路：入股用户没登录->if(!token)->改标识this.$router.push->显示login.vue
-    // 如果登录了->if(token)->继续渲染home.vue
-    // 代码位置：什么情况下？执行if else?-->组件渲染完成-->Vue加载完组件后
-    // 应该在组件加载之前判断token是否存在，所以可以在beforeMount()或者是beforeCreate()
-    if (!localStorage.getItem('token')) {
+      }
+    },
+    beforeMount () {
+      // 进入首页权限验证
+      // 思路：入股用户没登录->if(!token)->改标识this.$router.push->显示login.vue
+      // 如果登录了->if(token)->继续渲染home.vue
+      // 代码位置：什么情况下？执行if else?-->组件渲染完成-->Vue加载完组件后
+      // 应该在组件加载之前判断token是否存在，所以可以在beforeMount()或者是beforeCreate()
+      if (!localStorage.getItem('token')) {
+        this.$router.push({
+          name: 'login'
+        })
+        // 并给出提示信息
+        this.$message.warning('请先登录')
+      }
+    },
+    mounted () {
       this.$router.push({
-        name: 'login'
+        name: 'home'
       })
-      // 并给出提示信息
-      this.$message.warning('请先登录')
-    }
-  },
-  mounted () {
-    this.$router.push({
-      name: 'home'
-    })
-  },
-  methods: {
-    // 处理退出登录
-    handleLoginOut () {
-      // 1. 清除toekn
-      localStorage.clear()
-      // 2. 跳转登录页
-      this.$router.push({
-        name: 'login'
-      })
-      // 给出相应提示
-      this.$message.warning('退出成功')
-    }
+    },
+    methods: {
+      // 处理退出登录
+      handleLoginOut () {
+        // 1. 清除toekn
+        localStorage.clear()
+        // 2. 跳转登录页
+        this.$router.push({
+          name: 'login'
+        })
+        // 给出相应提示
+        this.$message.warning('退出成功')
+      }
 
+    }
   }
-}
 </script>
 
 <style>

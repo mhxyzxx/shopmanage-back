@@ -22,6 +22,7 @@
           <a
             href="javascript:;"
             class="header-logout"
+            @click.prevent="handleLoginOut"
           >退出</a>
         </el-col>
       </el-row>
@@ -35,11 +36,9 @@
       >
         <el-menu
           default-active="2"
-          class="el-menu-vertical-demo"
+          class="el-menu-vertical-demo sider-menu"
           :unique-opened=true
           :router=true
-          @open="handleOpen"
-          @close="handleClose"
         >
           <!-- 1 -->
           <el-submenu index="1">
@@ -131,24 +130,49 @@
 </template>
 
 <script>
-  export default {
-    components: {
+export default {
+  components: {
 
-    },
-    data () {
-      return {
+  },
+  data () {
+    return {
 
-      }
-    },
-    methods: {
-      handleOpen (key, keyPath) {
-        console.log(key, keyPath);
-      },
-      handleClose (key, keyPath) {
-        console.log(key, keyPath);
-      }
     }
+  },
+  beforeMount () {
+    // 进入首页权限验证
+    // 思路：入股用户没登录->if(!token)->改标识this.$router.push->显示login.vue
+    // 如果登录了->if(token)->继续渲染home.vue
+    // 代码位置：什么情况下？执行if else?-->组件渲染完成-->Vue加载完组件后
+    // 应该在组件加载之前判断token是否存在，所以可以在beforeMount()或者是beforeCreate()
+    if (!localStorage.getItem('token')) {
+      this.$router.push({
+        name: 'login'
+      })
+      // 并给出提示信息
+      this.$message.warning('请先登录')
+    }
+  },
+  mounted () {
+    this.$router.push({
+      name: 'home'
+    })
+  },
+  methods: {
+    // 处理退出登录
+    handleLoginOut () {
+      // 1. 清除toekn
+      localStorage.clear()
+      // 2. 跳转登录页
+      this.$router.push({
+        name: 'login'
+      })
+      // 给出相应提示
+      this.$message.warning('退出成功')
+    }
+
   }
+}
 </script>
 
 <style>
@@ -159,8 +183,9 @@
 .header {
   background-color: #e6e6e6;
 }
-.aside {
-  background-color: pink;
+
+.aside .sider-menu {
+  height: 100%;
 }
 .header .header-middle {
   text-align: center;

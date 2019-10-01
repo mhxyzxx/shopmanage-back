@@ -15,21 +15,26 @@
           placeholder="请输入内容"
           v-model="query"
           class="input-text"
+          clearable
+          @clear="getAllUsers()"
         >
           <el-button
             slot="append"
             icon="el-icon-search"
+            @click.prevent="searchUser()"
           ></el-button>
         </el-input>
         <!-- 添加按钮 -->
         <el-button
           type="primary"
           plain
-        >主要按钮</el-button>
+          @click.prevent="showdialogForm()"
+        >添加</el-button>
       </el-col>
     </el-row>
     <!-- 表格展示 -->
     <el-table
+      height="250px"
       :data="listData"
       style="width: 100%"
     >
@@ -94,6 +99,7 @@ fmtata的使用:
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.mg_state"
+            @change="handleState(scope.row)"
             active-color="#13ce66"
             inactive-color="#ff4949"
           >
@@ -104,13 +110,14 @@ fmtata的使用:
         label="操作"
         width="200"
       >
-        <template>
+        <template slot-scope="scope">
           <el-button
             type="primary"
             icon="el-icon-edit"
             circle
             size="mini"
             plain
+            @click.prevent="showdialogEdit(scope.row)"
           ></el-button>
           <el-button
             type="success"
@@ -125,6 +132,7 @@ fmtata的使用:
             circle
             size="mini"
             plain
+            @click.prevent="deleteUser(scope.row.id)"
           ></el-button>
         </template>
       </el-table-column>
@@ -149,6 +157,77 @@ fmtata的使用:
       :total="total"
     >
     </el-pagination>
+
+    <!-- 对话框 -> 添加用户 -->
+    <el-dialog
+      title="添加用户"
+      :visible.sync="dialogFormVisibleAdd"
+    >
+      <!-- 表单 -->
+      <el-form
+        label-position="left"
+        label-width="80px"
+        :model="formdata"
+      >
+        <el-form-item label="用户名">
+          <el-input v-model="formdata.username"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="formdata.password"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="formdata.email"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="formdata.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
+        <el-button
+          type="primary"
+          @click="addUser()"
+        >确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 对话框 -> 编辑用户 -->
+    <el-dialog
+      title="编辑用户"
+      :visible.sync="dialogFormVisibleEdit"
+    >
+      <!-- 表单 -->
+      <el-form
+        label-position="left"
+        label-width="80px"
+        :model="formdata"
+      >
+        <el-form-item label="用户名">
+          <el-input
+            v-model="formdata.username"
+            disabled
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="formdata.email"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="formdata.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+        <el-button
+          type="primary"
+          @click.prevent="editUser()"
+        >确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -163,8 +242,16 @@ fmtata的使用:
         pagenum: 1,
         pagesize: 2,
         listData: [],
-        total: -1 // 为了区分是自己初始化的值还是请求返回的值
-
+        total: -1, // 为了区分是自己初始化的值还是请求返回的值
+        dialogFormVisibleAdd: false,
+        dialogFormVisibleEdit: false,
+        formdata: {
+          username: '',
+          password: '',
+          email: '',
+          mobile: ''
+        },
+        editid: ''
       };
     },
     created () {
@@ -204,7 +291,117 @@ fmtata的使用:
         // 按照新的页码发送请求
         this.pagenum = val;
         this.getUsersList();
+      },
+
+      // 搜索用户功能
+      searchUser () {
+        this.pagenum = 1;
+        // 按照关键字搜索，重新发送请求，渲染列表
+        this.getUsersList();
+      },
+
+      // 搜索-->清空输入框时，获得所有用户
+      getAllUsers () {
+        this.getUsersList();
+      },
+
+      // 添加用户功能相关功能
+      // 1. 点击添加按钮，显示对话框
+      showdialogForm () {
+        //  不要忘记再次打开对话框清空数据,你也可以一个一个的情况
+        this.formdata = {};
+        this.dialogFormVisibleAdd = true;
+      },
+      // 2.点击确定按钮，发送请求
+      async addUser () {
+        // 发送请求
+        const res = await this.$http.post('users', this.formdata);
+        console.log(res);
+        const { meta: { msg, status } } = res.data;
+        if (status === 201) {
+          // 添加成功：1. 关闭对话框 2.给出提示 3. 重新渲染表格
+          this.dialogFormVisibleAdd = false;
+          // 提示添加成功
+          this.$message.success(msg);
+          this.getUsersList();
+        } else {
+          this.$message.error(msg);
+        }
+      },
+
+      // 删除用户功能
+      deleteUser (userId) {
+        // 删除用户给出相应的提示
+        this.$confirm('确认要删除吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          // 根据对应的id删除对应的用户，需发送请求
+          const res = await this.$http.delete(`users/${userId}`);
+          console.log(res);
+          const { meta: { msg, status } } = res.data;
+          if (status === 200) {
+            // this.$message({
+            //   type: 'success',
+            //   message: '删除成功!'
+            // });
+            this.$message.success(msg);
+            // 更新列表
+            this.pagenum = 1;
+            this.getUsersList();
+          }
+
+        }).catch(() => {
+          // this.$message({
+          //   type: 'info',
+          //   message: '已取消删除'
+          // });
+          this.$message.info(msg);
+        });
+      },
+
+      // 编辑用户相关功能
+      // 1. 点击编辑按钮，显示编辑对话框
+      showdialogEdit (user) {
+        this.dialogFormVisibleEdit = true;
+        // 显示编辑用户的信息
+        this.formdata = user;
+        this.editid = user.id;
+      },
+      // 2.点击确定按钮，发送请求
+      async editUser () {
+        // 发送请求
+        // 找id-->user.id-->1. data有没有 2. 方法实参有没有
+        // this.formdata上一步已经被user赋值，里面有对应的id
+        // http://localhost:8888/api/private/v1/users/500 请求头的路径
+        // 三种种方式如下：
+        // const res = await this.$http.put(`users/${this.editid}`, this.formdata);
+        // const res = await this.$http.put(`users/id=${this.editid}?email=${this.formdata.email}&mobile=${this.formdata.mobile}`)
+        const res = await this.$http.put(`users/${this.formdata.id}`, this.formdata);
+        console.log(res);
+        const { meta: { msg, status } } = res.data;
+        if (status === 200) {
+          this.$message.success(msg);
+          this.dialogFormVisibleEdit = false;
+          this.getUsersList();
+        } else {
+          this.$message.error(msg);
+        }
+      },
+
+      // 修改用户状态功能
+      async handleState(user) {
+        // console.log(user);
+        // 发送请求 请求路径：users/:uId/state/:type
+        const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
+        console.log(res);
+        const {meta: {status, msg}} = res.data;
+        if (status === 200) {
+          this.$message.success(msg);
+        }
       }
+
     }
   }
 </script>

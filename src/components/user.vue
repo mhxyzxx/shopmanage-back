@@ -125,6 +125,7 @@ fmtata的使用:
             circle
             size="mini"
             plain
+            @click.prevent="showdialogSetRole(scope.row)"
           ></el-button>
           <el-button
             type="danger"
@@ -228,6 +229,53 @@ fmtata的使用:
         >确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 对话框 -> 分配角色 -->
+    <el-dialog
+      title="分配角色"
+      :visible.sync="dialogFormVisibleSetRole"
+    >
+      <el-form
+        :model="formdata"
+        label-position="left"
+        label-width="80px"
+      >
+        <el-form-item label="用户名">
+          {{formdata.username}}
+        </el-form-item>
+        <el-form-item label="角色">
+          {{selectVal}}
+          <el-select
+            v-model="selectVal"
+            placeholder="请选择角色"
+          >
+            <el-option
+              label="请选择"
+              :value="-1"
+            ></el-option>
+            <!-- 将来获取角色数据 v-for遍历 -->
+            <!-- 5个角色此时都有了自己的value,value就是角色id[30,31,34,39,40]
+            如果selectVal的值，如30，如果30和上面的数组中的一个相等，页面上会显示对应的lable值 -->
+            <el-option
+              v-for="(item, i) in rolesArr"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="dialogFormVisibleSetRole = false">取 消</el-button>
+        <el-button
+          type="primary"
+          @click=setRole()
+        >确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -245,13 +293,19 @@ fmtata的使用:
         total: -1, // 为了区分是自己初始化的值还是请求返回的值
         dialogFormVisibleAdd: false,
         dialogFormVisibleEdit: false,
+        dialogFormVisibleSetRole: false,
         formdata: {
           username: '',
           password: '',
           email: '',
           mobile: ''
         },
-        editid: ''
+        editid: '',
+        // 下拉框用的数据
+        selectVal: -1,
+        // currentUsername: '',
+        rolesArr: [], // 角色数组
+        currentRoleId: -1
       };
     },
     created () {
@@ -391,14 +445,63 @@ fmtata的使用:
       },
 
       // 修改用户状态功能
-      async handleState(user) {
+      async handleState (user) {
         // console.log(user);
         // 发送请求 请求路径：users/:uId/state/:type
         const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
         console.log(res);
-        const {meta: {status, msg}} = res.data;
+        const { meta: { status, msg } } = res.data;
         if (status === 200) {
           this.$message.success(msg);
+        }
+      },
+
+      // 分配角色相关功能
+      async showdialogSetRole (user) {
+        // this.formdata.username = user.username; // 显示当前用户的用户名
+        // 说明：我们这里也可以使用forddata的数据，但由于我们的分配角色跟添加，删除等功能都是独立的，这里我们给它单独提供一个数据
+        // this.currentUsername = user.username;
+        this.formdata = user;
+        this.currentRoleId = user.id;
+        // 回顾下拉框的特性：
+        // 1. 默认显示请选择-->当v-model的数据值selectVal和option的请选择的value值相等，此时显示请选择
+        // 2. 当选择某个option时，v-model的数据的值等于选中的lable的value值
+
+        // 显示对话框
+        this.dialogFormVisibleSetRole = true;
+        // 发送请求角色列表的请求
+        const res = await this.$http.get('roles');
+        console.log(res);
+        const { meta, data } = res.data;
+        if (meta.status === 200) {
+          this.rolesArr = data;
+        } else {
+          this.$message.error(msg);
+        }
+
+        // 给下拉框v-model绑定的seletVal赋值
+        // tis.selectVal = '当前用户的角色id-->看接口。我们之前的是用户id'
+        // 查看接口中有个：根据用户id查角色id
+        const resRoles = await this.$http.get(`users/${user.id}`);
+        console.log(resRoles);
+        // 给下拉框v-model绑定selectVal赋值
+        this.selectVal = resRoles.data.data.rid;
+
+      },
+
+      // 分配角色，发送请求
+      async setRole() {
+
+        const res = await this.$http.put(`users/${this.currentRoleId}/role`,{rid: this.selectVal});
+        console.log(res);
+        const { meta, data } = res.data;
+        if (meta.status === 200) {
+          this.$message.success(meta.msg);
+          // 关闭对话框
+          this.dialogFormVisibleSetRole = false;
+
+        } else {
+          this.$message.error(meta.msg);
         }
       }
 

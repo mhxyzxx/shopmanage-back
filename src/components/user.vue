@@ -29,7 +29,7 @@
           type="primary"
           plain
           @click.prevent="showdialogForm()"
-        >添加</el-button>
+        >添加用户</el-button>
       </el-col>
     </el-row>
     <!-- 表格展示 -->
@@ -250,6 +250,7 @@ fmtata的使用:
           >
             <el-option
               label="请选择"
+              disabled
               :value="-1"
             ></el-option>
             <!-- 将来获取角色数据 v-for遍历 -->
@@ -257,7 +258,7 @@ fmtata的使用:
             如果selectVal的值，如30，如果30和上面的数组中的一个相等，页面上会显示对应的lable值 -->
             <el-option
               v-for="(item, i) in rolesArr"
-              :key="item.id"
+              :key="i"
               :label="item.roleName"
               :value="item.id"
             ></el-option>
@@ -314,34 +315,33 @@ fmtata的使用:
     methods: {
       // 获取用户列表
       async getUsersList () {
-        const AUTH_TOKEN = localStorage.getItem('token')
-        this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN // 设置请求头
+
         // 发送请求
         // query查询参数	可以为空
         // pagenum	当前页码	不能为空
         // pagesize 每页显示条数	不能为空
         const res = await this.$http.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
         // const res = await this.$http.get('users?query=' + this.query + '&pagenum=' + this.pagenum + '&pagesize=' + this.pagesize)
-        console.log(res)
+        // console.log(res)
         const { data, meta: { msg, status } } = res.data
         if (status === 200) {
           this.listData = data.users;
           this.total = data.total;
 
-          console.log(this.listData)
+          // console.log(this.listData)
         }
       },
 
       // 分页相关功能
       handleSizeChange (val) {
-        console.log(`每页 ${val} 条`);
+        // console.log(`每页 ${val} 条`);
         // 按照新的pagesize发送请求
         this.pagenum = 1;
         this.pagesize = val;
         this.getUsersList(); // 重新渲染列表
       },
       handleCurrentChange (val) {
-        console.log(`当前页: ${val}`);
+        // console.log(`当前页: ${val}`);
         // 按照新的页码发送请求
         this.pagenum = val;
         this.getUsersList();
@@ -370,7 +370,7 @@ fmtata的使用:
       async addUser () {
         // 发送请求
         const res = await this.$http.post('users', this.formdata);
-        console.log(res);
+        // console.log(res);
         const { meta: { msg, status } } = res.data;
         if (status === 201) {
           // 添加成功：1. 关闭对话框 2.给出提示 3. 重新渲染表格
@@ -393,7 +393,7 @@ fmtata的使用:
         }).then(async () => {
           // 根据对应的id删除对应的用户，需发送请求
           const res = await this.$http.delete(`users/${userId}`);
-          console.log(res);
+          // console.log(res);
           const { meta: { msg, status } } = res.data;
           if (status === 200) {
             // this.$message({
@@ -433,7 +433,7 @@ fmtata的使用:
         // const res = await this.$http.put(`users/${this.editid}`, this.formdata);
         // const res = await this.$http.put(`users/id=${this.editid}?email=${this.formdata.email}&mobile=${this.formdata.mobile}`)
         const res = await this.$http.put(`users/${this.formdata.id}`, this.formdata);
-        console.log(res);
+        // console.log(res);
         const { meta: { msg, status } } = res.data;
         if (status === 200) {
           this.$message.success(msg);
@@ -449,7 +449,7 @@ fmtata的使用:
         // console.log(user);
         // 发送请求 请求路径：users/:uId/state/:type
         const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
-        console.log(res);
+        // console.log(res);
         const { meta: { status, msg } } = res.data;
         if (status === 200) {
           this.$message.success(msg);
@@ -471,7 +471,7 @@ fmtata的使用:
         this.dialogFormVisibleSetRole = true;
         // 发送请求角色列表的请求
         const res = await this.$http.get('roles');
-        console.log(res);
+        // console.log(res);
         const { meta, data } = res.data;
         if (meta.status === 200) {
           this.rolesArr = data;
@@ -483,7 +483,7 @@ fmtata的使用:
         // tis.selectVal = '当前用户的角色id-->看接口。我们之前的是用户id'
         // 查看接口中有个：根据用户id查角色id
         const resRoles = await this.$http.get(`users/${user.id}`);
-        console.log(resRoles);
+        // console.log(resRoles);
         // 给下拉框v-model绑定selectVal赋值
         this.selectVal = resRoles.data.data.rid;
 
@@ -493,7 +493,7 @@ fmtata的使用:
       async setRole() {
 
         const res = await this.$http.put(`users/${this.currentRoleId}/role`,{rid: this.selectVal});
-        console.log(res);
+        // console.log(res);
         const { meta, data } = res.data;
         if (meta.status === 200) {
           this.$message.success(meta.msg);

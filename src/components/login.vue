@@ -42,7 +42,7 @@ export default {
     // 解决办法：Es7的新特性 async,await
     async handleLogin () {
       const res = await this.$http.post('login', this.formdata)
-      console.log(res)
+      // console.log(res)
       // const { data: { data: {token}, meta: { msg, status } } } = res
       const { data: { data, meta: { msg, status } } } = res
       if (status === 200) {
@@ -53,7 +53,7 @@ export default {
         // 保存token值
 
         if (data.data !== 'null') {
-          console.log('33333')
+          // console.log('33333')
           localStorage.setItem('token', data.token)
         }
         // 登录成功后，跳到主页

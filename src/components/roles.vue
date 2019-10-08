@@ -119,6 +119,37 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分配权限-对话框 -->
+    <el-dialog
+      title="分配权限"
+      :visible.sync="dialogFormVisibleRight"
+    >
+      <!--
+      node-key="id" 要看treeList中有没有id
+      :default-expanded-keys 也不能写死
+        :default-checked-keys="[5]" 不能写死，因为每个角色它有哪些权限我们就让它选中，它是否是选中，你要根据网络请求去获取，所以，声明一个数组checkArr
+        :props="defaultProps"
+     -->
+      <el-tree
+        :data="treeList"
+        show-checkbox
+        node-key="id"
+        default-expand-all
+        :default-checked-keys="checkArr"
+        :props="defaultProps"
+      >
+      </el-tree>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="dialogFormVisibleRight = false">取 消</el-button>
+        <el-button
+          type="primary"
+          @click="dialogFormVisibleRight = false"
+        >确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -129,7 +160,17 @@
     },
     data () {
       return {
-        rolesList: []
+        rolesList: [],
+        dialogFormVisibleRight: false,
+        // 树形结构的数据
+        treeList: [],
+        checkArr: [],
+        // expandArr: [],
+        defaultProps: {
+          children: 'children',
+          label: 'authName'
+        }
+
       }
     },
     created () {
@@ -143,16 +184,55 @@
         console.log(res)
         const { data, meta: { msg, status } } = res.data
         if (status === 200) {
-          this.rolesList = data;
-          // console.log(this.rolesList);
+          this.rolesList = data
+          // console.log(this.rolesList)
+
         } else {
           this.$message.error(msg);
         }
 
       },
 
-      // 设置角色权限功能
-      showdialogSetRights () {
+      // 设置角色权限功能,打开对话框
+      async showdialogSetRights (role) {
+        this.dialogFormVisibleRight = true
+        const res = await this.$http.get(`rights/tree`)
+        console.log(res)
+        const { data, meta: { msg, status } } = res.data
+        if (status === 200) {
+          this.treeList = data
+          // console.log(this.treeList)
+          // 默认展开所有节点，把所有节点的id都放到一个数组expandArr中即可。使用for循环嵌套
+          // var temp = [];
+          // this.treeList.forEach((item1) => {
+          //   temp.push(item1.id)
+          //   item1.children.forEach((item2) => {
+          //     temp.push(item2.id)
+          //     item2.children.forEach((item3) => {
+          //       temp.push(item3.id)
+          //     })
+          //   })
+          // })
+          // this.expandArr = temp
+
+          // 获取当前角色权限的id-->那么，就要先拿到当前角色的id
+          var temp2 = [];
+          console.log(role)
+          role.children.forEach((item1) => {
+            // temp2.push(item1.id)
+            item1.children.forEach((item2) => {
+              // temp2.push(item2.id)
+              item2.children.forEach((item3) => {
+                temp2.push(item3.id)
+              })
+            })
+          })
+          // console.log(temp2)
+          this.checkArr = temp2
+
+        } else {
+          this.$message.error(msg);
+        }
 
       },
       // 取消当前角色的权限功能

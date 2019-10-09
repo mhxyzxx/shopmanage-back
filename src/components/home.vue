@@ -41,20 +41,20 @@
           :router=true
         >
           <!-- 1 -->
-          <el-submenu index="1">
+          <el-submenu :index="item1.order+''" v-for="(item1, i) in menusArr" :key="i">
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{item1.authName}}</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="user">
+              <el-menu-item :index="item2.path+''" v-for="(item2, i) in item1.children" :key="i">
                 <i class="el-icon-menu"></i>
-                <span>用户列表</span>
+                <span>{{item2.authName}}</span>
               </el-menu-item>
             </el-menu-item-group>
           </el-submenu>
           <!-- 2 -->
-          <el-submenu index="2">
+          <!-- <el-submenu index="2">
             <template slot="title">
               <i class="el-icon-location"></i>
               <span>权限管理</span>
@@ -69,9 +69,9 @@
                 <span>权限列表</span>
               </el-menu-item>
             </el-menu-item-group>
-          </el-submenu>
-          <!-- 3-->
-          <el-submenu index="3">
+          </el-submenu> -->
+          <!-- 3 -->
+          <!-- <el-submenu index="3">
             <template slot="title">
               <i class="el-icon-location"></i>
               <span>商品管理</span>
@@ -90,9 +90,9 @@
                 <span>商品分类</span>
               </el-menu-item>
             </el-menu-item-group>
-          </el-submenu>
+          </el-submenu> -->
           <!-- 4 -->
-          <el-submenu index="4">
+          <!-- <el-submenu index="4">
             <template slot="title">
               <i class="el-icon-location"></i>
               <span>订单管理</span>
@@ -103,9 +103,9 @@
                 <span>订单列表</span>
               </el-menu-item>
             </el-menu-item-group>
-          </el-submenu>
+          </el-submenu> -->
           <!-- 5 -->
-          <el-submenu index="5">
+          <!-- <el-submenu index="5">
             <template slot="title">
               <i class="el-icon-location"></i>
               <span>数据统计</span>
@@ -120,7 +120,7 @@
                 选项2
               </el-menu-item>
             </el-menu-item-group>
-          </el-submenu>
+          </el-submenu> -->
         </el-menu>
       </el-aside>
       <!-- 右侧主体内容 -->
@@ -139,29 +139,46 @@
     },
     data () {
       return {
-
+        menusArr: []
       }
     },
-    beforeMount () {
-      // 进入首页权限验证
-      // 思路：入股用户没登录->if(!token)->改标识this.$router.push->显示login.vue
-      // 如果登录了->if(token)->继续渲染home.vue
-      // 代码位置：什么情况下？执行if else?-->组件渲染完成-->Vue加载完组件后
-      // 应该在组件加载之前判断token是否存在，所以可以在beforeMount()或者是beforeCreate()
-      if (!localStorage.getItem('token')) {
-        this.$router.push({
-          name: 'login'
-        })
-        // 并给出提示信息
-        this.$message.warning('请先登录')
-      }
+    created () {
+      // 渲染首屏数据时，加载左侧菜单
+      this.getMenus()
     },
+    // 下面这段代码不用写了，已经在路由配置文件中添加了路由导航守卫里了
+    // beforeMount () {
+    //   // 进入首页权限验证
+    //   // 思路：入股用户没登录->if(!token)->改标识this.$router.push->显示login.vue
+    //   // 如果登录了->if(token)->继续渲染home.vue
+    //   // 代码位置：什么情况下？执行if else?-->组件渲染完成-->Vue加载完组件后
+    //   // 应该在组件加载之前判断token是否存在，所以可以在beforeMount()或者是beforeCreate()
+    //   if (!localStorage.getItem('token')) {
+    //     this.$router.push({
+    //       name: 'login'
+    //     })
+    //     // 并给出提示信息
+    //     this.$message.warning('请先登录')
+    //   }
+    // },
     mounted () {
       this.$router.push({
         name: 'home'
       })
     },
     methods: {
+      // 动态导航功能
+      async getMenus () {
+        const res = await this.$http.get(`menus`)
+        console.log(res)
+        const {data, meta: {msg, status}} = res.data
+        if (status === 200) {
+          this.$message.success(msg)
+          this.menusArr = data
+        } else {
+          this.$message.error(msg)
+        }
+      },
       // 处理退出登录
       handleLoginOut () {
         // 1. 清除toekn

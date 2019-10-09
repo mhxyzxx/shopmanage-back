@@ -132,6 +132,7 @@
      -->
       <el-tree
         :data="treeList"
+        ref="treeDom"
         show-checkbox
         node-key="id"
         default-expand-all
@@ -146,7 +147,7 @@
         <el-button @click="dialogFormVisibleRight = false">取 消</el-button>
         <el-button
           type="primary"
-          @click="dialogFormVisibleRight = false"
+          @click.prevent="setRights()"
         >确 定</el-button>
       </div>
     </el-dialog>
@@ -169,7 +170,8 @@
         defaultProps: {
           children: 'children',
           label: 'authName'
-        }
+        },
+        currentRoleId: -1
 
       }
     },
@@ -183,6 +185,7 @@
         const res = await this.$http.get('roles')
         console.log(res)
         const { data, meta: { msg, status } } = res.data
+
         if (status === 200) {
           this.rolesList = data
           // console.log(this.rolesList)
@@ -193,9 +196,10 @@
 
       },
 
-      // 设置角色权限功能,打开对话框
+      // 设置角色权限功能-->打开对话框及树形结构配置和展示
       async showdialogSetRights (role) {
         this.dialogFormVisibleRight = true
+        this.currentRoleId = role.id //获取当前角色id
         const res = await this.$http.get(`rights/tree`)
         console.log(res)
         const { data, meta: { msg, status } } = res.data
@@ -235,7 +239,40 @@
         }
 
       },
-      // 取消当前角色的权限功能
+      // 分配角色权限功能
+      // 取消当前角色的权限功能-->发送请求
+      async setRights () {
+        // 想要设置权限，要拿到: 获取全选节点的id--->getCheckedKeys和半选节点的id-->getHalfCheckedKeys
+        // 首先想el-tree组件中是否提供方法来获取这两类节点
+        // 1. 获取全选节点的id--->getCheckedKeys
+        // 那么，该怎么调用该方法？
+        // el-tree标签-->DOM元素.js方法
+        // 在js中中操作DOM元素-->ref操作DOM:
+        // 1. 给要操作的标签el-tree设置一个属性ref值
+        // 2. 在js中通过this.$ref.ref值.js方法（）调用即可
+        // console.log(this.$refs)
+        const result = this.$refs.treeDom.getCheckedKeys()
+        // console.log(result)
+
+        // 2. 半选节点的id-->getHalfCheckedKeys
+        const result2 = this.$refs.treeDom.getHalfCheckedKeys()
+        // console.log(result2)
+        const newRoleIdArr = [...result, ...result2]
+        // console.log(newRoleIdArr)
+
+        // 3.发送请求，设置权限
+        const res = await this.$http.post(`roles/${this.currentRoleId}/rights`, { rids: newRoleIdArr.join(",") })
+        // console.log(res)
+        const { meta: { msg, status } } = res.data
+        if (status === 200) {
+          this.$message.success(msg)
+          this.dialogFormVisibleRight = false
+        } else {
+          this.$message.error(msg)
+        }
+
+
+      },
       async delRight (role, right) {
         const res = await this.$http.delete(`roles/${role.id}/rights/${right.id}`)
         console.log(res);

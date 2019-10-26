@@ -40,7 +40,7 @@
             selectOptions: []是数组类型的，放你所选中的option的value值
             :props="{ expandTrigger: 'hover' }"
              -->
-            <el-cascader v-model="selectOptions" :options="options" expandTrigger='hover' @change="handleChange"></el-cascader>
+            <el-cascader v-model="selectOptions" :options="options" :props="defaultProp" expandTrigger='hover' @change="handleChange"></el-cascader>
           </el-form-item>
         </el-tab-pane>
         <el-tab-pane name="2" label="商品参数">商品参数--</el-tab-pane>
@@ -70,10 +70,30 @@ export default {
         goods_introduce: '',
         pics: '',
         attrs: ''
+      },
+      // 级联使用的数据
+      selectOptions: [],
+      options: [],
+      defaultProp: {
+        lable: '',
+        value: '',
+        children: ''
       }
     }
   },
+  created () {
+    this.getGoodsCate();
+  },
   methods: {
+    // 获取三级商品分类的数据
+    async getGoodsCate () {
+      const res = await this.$http.get(`categories?type=3`);
+      console.log(res);
+      const {meta: { msg, status}, data} = res.data;
+      if (status === 200) {
+        this.options = data;
+      }
+    },
     handleChange (value) {
       console.log(value);
     }

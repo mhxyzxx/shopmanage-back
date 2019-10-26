@@ -19,13 +19,31 @@
     1. 默认active初始值和name的值都是1字符串类型的
     2. 点击5个tab--被选中的tab的name值赋值给v-model的值，此时active=5
     -->
-    <el-tabs tab-position="left" v-model="active">
-      <el-tab-pane name="1" label="商品信息">商品信息</el-tab-pane>
-      <el-tab-pane name="2" label="商品参数">商品参数</el-tab-pane>
-      <el-tab-pane name="3" label="商品属性">商品属性</el-tab-pane>
-      <el-tab-pane name="4" label="商品图片">商品图片</el-tab-pane>
-      <el-tab-pane name="5" label="商品内容">商品内容</el-tab-pane>
-    </el-tabs>
+    <el-form :model="form" label-position="top" label-width="100px" class="form-wrap">
+      <el-tabs tab-position="left" v-model="active">
+        <el-tab-pane name="1" label="基本信息">
+          <el-form-item label="商品名称">
+            <el-input v-model="form.goods_name"></el-input>
+          </el-form-item>
+          <el-form-item label="商品价格">
+            <el-input v-model="form.goods_price"></el-input>
+          </el-form-item>
+          <el-form-item label="商品重量">
+            <el-input v-model="form.goods_weight"></el-input>
+          </el-form-item>
+          <el-form-item label="商品数量">
+            <el-input v-model="form.goods_number"></el-input>
+          </el-form-item>
+          <el-form-item label="商品分类">
+            <!-- 需表单元素,单独写 -->
+          </el-form-item>
+        </el-tab-pane>
+        <el-tab-pane name="2" label="商品参数">商品参数--</el-tab-pane>
+        <el-tab-pane name="3" label="商品属性">商品属性--</el-tab-pane>
+        <el-tab-pane name="4" label="商品图片">商品图片--</el-tab-pane>
+        <el-tab-pane name="5" label="商品内容">商品内容--</el-tab-pane>
+      </el-tabs>
+    </el-form>
   </el-card>
 
 </template>
@@ -37,7 +55,17 @@ export default {
   },
   data () {
     return {
-      active: '1'
+      active: '1',
+      form: {
+        goods_name: '',
+        goods_price: '',
+        goods_weight: '',
+        goods_number: '',
+        goods_cat: '',
+        goods_introduce: '',
+        pics: '',
+        attrs: ''
+      }
     }
   }
 }
@@ -50,5 +78,9 @@ export default {
 .add-goods-wrap .alet-box {
   margin-top: 20px;
   margin-bottom: 20px;
+}
+.form-wrap {
+  height: 350px;
+  overflow: auto;
 }
 </style>

@@ -5,7 +5,11 @@ import Home from '@/components/home.vue'
 import User from '@/components/user.vue'
 import Right from '@/components/right.vue'
 import Role from '@/components/roles.vue'
-import { Message } from 'element-ui';
+import GoodsList from '@/components/goodsList.vue'
+import GoodAdd from '@/components/goodsAdd.vue'
+import {
+    Message
+} from 'element-ui'
 Vue.use(Router)
 
 const router = new Router({
@@ -27,6 +31,16 @@ const router = new Router({
                     path: '/roles',
                     name: 'roles',
                     component: Role
+                },
+                {
+                    path: '/goods', // 因是后台返回，这里必须是/goods
+                    name: 'goods',
+                    component: GoodsList
+                },
+                {
+                    path: '/goodsadd', // 因是后台返回，这里必须是/goods
+                    name: 'goodsadd',
+                    component: GoodAdd
                 }
             ]
         },
@@ -37,7 +51,6 @@ const router = new Router({
         }
     ]
 })
-
 
 // 路由导航守卫(保安)
 // 任何路由标识变化-->会来到路由配置-->它会自动来到路由守卫-->渲染组件

@@ -19,6 +19,7 @@ Vue.use(ElementUI)
 Vue.config.productionTip = false
 
 // 全局过滤器，处理日期格式
+// 这个全局过滤器没有设置自己的参数，参数是在函数里面传的
 Vue.filter('fmtdate', v => {
     return moment(v).format('YYYY-MM-DD')
 });

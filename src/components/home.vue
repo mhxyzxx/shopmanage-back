@@ -3,43 +3,22 @@
     <!-- 公共头部 -->
     <el-header class="header">
       <el-row>
-        <el-col
-          :span="4"
-          class="header-logo"
-        >
-          <img
-            src="@/assets/logo.jpg"
-            alt=""
-          >
+        <el-col :span="4" class="header-logo">
+          <img src="@/assets/logo.jpg" alt="">
         </el-col>
-        <el-col
-          :span="19"
-          class="header-middle"
-        >
+        <el-col :span="19" class="header-middle">
           电商后台管理系统
         </el-col>
         <el-col :span="1">
-          <a
-            href="javascript:;"
-            class="header-logout"
-            @click.prevent="handleLoginOut"
-          >退出</a>
+          <a href="javascript:;" class="header-logout" @click.prevent="handleLoginOut">退出</a>
         </el-col>
       </el-row>
     </el-header>
     <!-- 主体内容 -->
     <el-container>
       <!-- 公共侧边栏 -->
-      <el-aside
-        class="aside"
-        width="200px"
-      >
-        <el-menu
-          default-active="2"
-          class="el-menu-vertical-demo sider-menu"
-          :unique-opened=true
-          :router=true
-        >
+      <el-aside class="aside" width="200px">
+        <el-menu default-active="2" class="el-menu-vertical-demo sider-menu" :unique-opened=true :router=true>
           <!-- 1 -->
           <el-submenu :index="item1.order+''" v-for="(item1, i) in menusArr" :key="i">
             <template slot="title">
@@ -133,66 +112,66 @@
 </template>
 
 <script>
-  export default {
-    components: {
+export default {
+  components: {
 
-    },
-    data () {
-      return {
-        menusArr: []
-      }
-    },
-    created () {
-      // 渲染首屏数据时，加载左侧菜单
-      this.getMenus()
-    },
-    // 下面这段代码不用写了，已经在路由配置文件中添加了路由导航守卫里了
-    // beforeMount () {
-    //   // 进入首页权限验证
-    //   // 思路：入股用户没登录->if(!token)->改标识this.$router.push->显示login.vue
-    //   // 如果登录了->if(token)->继续渲染home.vue
-    //   // 代码位置：什么情况下？执行if else?-->组件渲染完成-->Vue加载完组件后
-    //   // 应该在组件加载之前判断token是否存在，所以可以在beforeMount()或者是beforeCreate()
-    //   if (!localStorage.getItem('token')) {
-    //     this.$router.push({
-    //       name: 'login'
-    //     })
-    //     // 并给出提示信息
-    //     this.$message.warning('请先登录')
-    //   }
-    // },
-    mounted () {
-      this.$router.push({
-        name: 'home'
-      })
-    },
-    methods: {
-      // 动态导航功能
-      async getMenus () {
-        const res = await this.$http.get(`menus`)
-        console.log(res)
-        const {data, meta: {msg, status}} = res.data
-        if (status === 200) {
-          this.$message.success(msg)
-          this.menusArr = data
-        } else {
-          this.$message.error(msg)
-        }
-      },
-      // 处理退出登录
-      handleLoginOut () {
-        // 1. 清除toekn
-        localStorage.clear()
-        // 2. 跳转登录页
-        this.$router.push({
-          name: 'login'
-        })
-        // 给出相应提示
-        this.$message.warning('退出成功')
-      }
-
+  },
+  data () {
+    return {
+      menusArr: []
     }
+  },
+  created () {
+    // 渲染首屏数据时，加载左侧菜单
+    this.getMenus()
+  },
+  // 下面这段代码不用写了，已经在路由配置文件中添加了路由导航守卫里了
+  // beforeMount () {
+  //   // 进入首页权限验证
+  //   // 思路：入股用户没登录->if(!token)->改标识this.$router.push->显示login.vue
+  //   // 如果登录了->if(token)->继续渲染home.vue
+  //   // 代码位置：什么情况下？执行if else?-->组件渲染完成-->Vue加载完组件后
+  //   // 应该在组件加载之前判断token是否存在，所以可以在beforeMount()或者是beforeCreate()
+  //   if (!localStorage.getItem('token')) {
+  //     this.$router.push({
+  //       name: 'login'
+  //     })
+  //     // 并给出提示信息
+  //     this.$message.warning('请先登录')
+  //   }
+  // },
+  mounted () {
+    this.$router.push({
+      name: 'home'
+    })
+  },
+  methods: {
+    // 动态导航功能
+    async getMenus () {
+      const res = await this.$http.get(`menus`)
+      console.log(res)
+      const { data, meta: { msg, status } } = res.data
+      if (status === 200) {
+        this.$message.success(msg)
+        this.menusArr = data
+      } else {
+        this.$message.error(msg)
+      }
+    },
+    // 处理退出登录
+    handleLoginOut () {
+      // 1. 清除toekn
+      localStorage.clear()
+      // 2. 跳转登录页
+      this.$router.push({
+        name: 'login'
+      })
+      // 给出相应提示
+      this.$message.warning('退出成功')
+    }
+
   }
+}
 </script>
 
 <style>

@@ -35,7 +35,12 @@
             <el-input v-model="form.goods_number"></el-input>
           </el-form-item>
           <el-form-item label="商品分类">
-            <!-- 需表单元素,单独写 -->
+            <!-- 表单元素：级联选择器
+            options是数据源
+            selectOptions: []是数组类型的，放你所选中的option的value值
+            :props="{ expandTrigger: 'hover' }"
+             -->
+            <el-cascader v-model="selectOptions" :options="options" expandTrigger='hover' @change="handleChange"></el-cascader>
           </el-form-item>
         </el-tab-pane>
         <el-tab-pane name="2" label="商品参数">商品参数--</el-tab-pane>
@@ -66,6 +71,11 @@ export default {
         pics: '',
         attrs: ''
       }
+    }
+  },
+  methods: {
+    handleChange (value) {
+      console.log(value);
     }
   }
 }

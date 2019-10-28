@@ -45,10 +45,9 @@
           </el-form-item>
         </el-tab-pane>
         <el-tab-pane name="2" label="商品参数">
-          <el-form-item label="写死一个">
+          <el-form-item :label="item1.attr_name" v-for="(item1, i) in arrDy" :key="item1.attr_id">
             <el-checkbox-group v-model="checkList">
-              <el-checkbox label="复选框 A"></el-checkbox>
-              <el-checkbox label="复选框 B"></el-checkbox>
+              <el-checkbox :label="item2" v-for="(item2, i) in item1.attr_vals" :key="i"></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </el-tab-pane>
@@ -123,10 +122,29 @@ export default {
         }
         // 获取动态参数数据
         const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`);
-        console.log(res);
+        // console.log(res);
         const { meta: { msg, status }, data } = res.data;
         if (status === 200) {
           this.arrDy = data;
+          console.log(this.arrDy);
+          // this.arrDy中的attr_vals是字符串，并不是我们想要的结果，我们需要的是一个数组
+          // "abc, def, efef" -> [abc, def, efef]
+          this.arrDy.forEach(item => {
+            // 为了避免后台返回的字符串中有空格，要先处理下空格 " a,b,d  "
+            // 这样还不行，要是后台返回""空字符串，"".split(',')是会报错的，所以要判断下
+            // 如果 ""怎么做
+            // 如果不是""-->split(',')
+            // if (item.attr_vals.trim().length === 0) {
+            //   // 如果是空字符串的话，是不能够遍历的，否则会报错，所以，我们给它一个空数组
+            //   item.attr_vals = [];
+            // } else {
+            //   item.attr_vals = item.attr_vals.trim().split(',');
+            // }
+            // 以上判断还可改写为三元表达式
+            item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',');
+
+            console.log(item.attr_vals);
+          })
         }
       }
     }

@@ -51,7 +51,11 @@
             </el-checkbox-group>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane name="3" label="商品属性">商品属性--</el-tab-pane>
+        <el-tab-pane name="3" label="商品属性">
+          <el-form-item :label="item.attr_name" v-for="(item, i) in arrStatic" :key="i">
+            <el-input v-model="item.attr_vals"></el-input>
+          </el-form-item>
+        </el-tab-pane>
         <el-tab-pane name="4" label="商品图片">商品图片--</el-tab-pane>
         <el-tab-pane name="5" label="商品内容">商品内容--</el-tab-pane>
       </el-tabs>

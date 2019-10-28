@@ -89,8 +89,7 @@ export default {
       },
       // 动态参数数组
       arrDy: [],
-      // 复选框数组
-      checkList: []
+      arrStatic: []
     }
   },
   created () {
@@ -113,38 +112,49 @@ export default {
     // 点击任何tab都会触发该事件
     async changeTab () {
       // 1. 如果点了第二个tab
-      if (this.active === "2") {
+      if (this.active === "2" || this.active === "3") {
         // 2. 如果没有选择三级分类，给出相应提示
         if (this.selectOptions.length !== 3) {
           // 提示
           this.$message.error('请先选择三级分类！')
           return;
         }
+        // 获取静态数组
+        if (this.active === "3") {
+          const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=only`);
+          const { meta: { msg, status }, data } = res.data;
+          if (status === 200) {
+            this.arrStatic = data;
+            console.log(this.arrStatic);
+          }
+        }
         // 获取动态参数数据
-        const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`);
-        // console.log(res);
-        const { meta: { msg, status }, data } = res.data;
-        if (status === 200) {
-          this.arrDy = data;
-          console.log(this.arrDy);
-          // this.arrDy中的attr_vals是字符串，并不是我们想要的结果，我们需要的是一个数组
-          // "abc, def, efef" -> [abc, def, efef]
-          this.arrDy.forEach(item => {
-            // 为了避免后台返回的字符串中有空格，要先处理下空格 " a,b,d  "
-            // 这样还不行，要是后台返回""空字符串，"".split(',')是会报错的，所以要判断下
-            // 如果 ""怎么做
-            // 如果不是""-->split(',')
-            // if (item.attr_vals.trim().length === 0) {
-            //   // 如果是空字符串的话，是不能够遍历的，否则会报错，所以，我们给它一个空数组
-            //   item.attr_vals = [];
-            // } else {
-            //   item.attr_vals = item.attr_vals.trim().split(',');
-            // }
-            // 以上判断还可改写为三元表达式
-            item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',');
+        if (this.active === "2") {
+          const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`);
+          // console.log(res);
+          const { meta: { msg, status }, data } = res.data;
+          if (status === 200) {
+            this.arrDy = data;
+            console.log(this.arrDy);
+            // this.arrDy中的attr_vals是字符串，并不是我们想要的结果，我们需要的是一个数组
+            // "abc, def, efef" -> [abc, def, efef]
+            this.arrDy.forEach(item => {
+              // 为了避免后台返回的字符串中有空格，要先处理下空格 " a,b,d  "
+              // 这样还不行，要是后台返回""空字符串，"".split(',')是会报错的，所以要判断下
+              // 如果 ""怎么做
+              // 如果不是""-->split(',')
+              // if (item.attr_vals.trim().length === 0) {
+              //   // 如果是空字符串的话，是不能够遍历的，否则会报错，所以，我们给它一个空数组
+              //   item.attr_vals = [];
+              // } else {
+              //   item.attr_vals = item.attr_vals.trim().split(',');
+              // }
+              // 以上判断还可改写为三元表达式
+              item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',');
 
-            console.log(item.attr_vals);
-          })
+              console.log(item.attr_vals);
+            })
+          }
         }
       }
     }

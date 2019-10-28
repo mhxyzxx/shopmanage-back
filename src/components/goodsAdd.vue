@@ -40,11 +40,18 @@
             selectOptions: []是数组类型的，放你所选中的option的value值
             :props="{ expandTrigger: 'hover' }"
              -->
-             {{ selectOptions }}
-            <el-cascader clearable v-model="selectOptions" :options="options" :props="defaultProp"  @change="handleChange"></el-cascader>
+            {{ selectOptions }}
+            <el-cascader clearable v-model="selectOptions" :options="options" :props="defaultProp" @change="handleChange"></el-cascader>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane name="2" label="商品参数">商品参数--</el-tab-pane>
+        <el-tab-pane name="2" label="商品参数">
+          <el-form-item label="写死一个">
+            <el-checkbox-group v-model="checkList">
+              <el-checkbox label="复选框 A"></el-checkbox>
+              <el-checkbox label="复选框 B"></el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-tab-pane>
         <el-tab-pane name="3" label="商品属性">商品属性--</el-tab-pane>
         <el-tab-pane name="4" label="商品图片">商品图片--</el-tab-pane>
         <el-tab-pane name="5" label="商品内容">商品内容--</el-tab-pane>
@@ -73,7 +80,7 @@ export default {
         attrs: ''
       },
       // 级联使用的数据
-      selectOptions: [1,3,6], // 默认选择三级分类
+      selectOptions: [1, 3, 6], // 默认选择三级分类
       options: [],
       defaultProp: {
         label: 'cat_name',
@@ -82,7 +89,9 @@ export default {
         expandTrigger: 'hover'
       },
       // 动态参数数组
-      arrDy: []
+      arrDy: [],
+      // 复选框数组
+      checkList: []
     }
   },
   created () {
@@ -93,7 +102,7 @@ export default {
     async getGoodsCate () {
       const res = await this.$http.get(`categories?type=3`);
       console.log(res);
-      const {meta: { msg, status}, data} = res.data;
+      const { meta: { msg, status }, data } = res.data;
       if (status === 200) {
         this.options = data;
         console.log(this.options)
@@ -115,7 +124,7 @@ export default {
         // 获取动态参数数据
         const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`);
         console.log(res);
-        const { meta: { msg, status }, data} = res.data;
+        const { meta: { msg, status }, data } = res.data;
         if (status === 200) {
           this.arrDy = data;
         }

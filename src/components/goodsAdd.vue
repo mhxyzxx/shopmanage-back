@@ -20,7 +20,7 @@
     2. 点击5个tab--被选中的tab的name值赋值给v-model的值，此时active=5
     -->
     <el-form :model="form" label-position="top" label-width="100px" class="form-wrap">
-      <el-tabs tab-position="left" v-model="active">
+      <el-tabs tab-position="left" v-model="active" @tab-click="changeTab()">
         <el-tab-pane name="1" label="基本信息">
           <el-form-item label="商品名称">
             <el-input v-model="form.goods_name"></el-input>
@@ -80,7 +80,9 @@ export default {
         value: 'cat_id',
         children: 'children', // key-value相同时，可以不写，见文档说明
         expandTrigger: 'hover'
-      }
+      },
+      // 动态参数数组
+      arrDy: []
     }
   },
   created () {
@@ -99,6 +101,25 @@ export default {
     },
     handleChange (value) {
       console.log(value);
+    },
+    // 点击任何tab都会触发该事件
+    async changeTab () {
+      // 1. 如果点了第二个tab
+      if (this.active === "2") {
+        // 2. 如果没有选择三级分类，给出相应提示
+        if (this.selectOptions.length !== 3) {
+          // 提示
+          this.$message.error('请先选择三级分类！')
+          return;
+        }
+        // 获取动态参数数据
+        const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`);
+        console.log(res);
+        const { meta: { msg, status }, data} = res.data;
+        if (status === 200) {
+          this.arrDy = data;
+        }
+      }
     }
   }
 }

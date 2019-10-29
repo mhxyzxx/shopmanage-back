@@ -56,7 +56,28 @@
             <el-input v-model="item.attr_vals"></el-input>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane name="4" label="商品图片">商品图片--</el-tab-pane>
+        <el-tab-pane name="4" label="商品图片">
+          <!-- 图片上传功能
+          1. action: 服务器目录路径(全路径网址)
+          2. header:{} 请求头
+          3. :on-success fn 上传成功的回调函数
+          4. :on-remove fn 移除照片的回调函数
+          5. 为了跟上面保持统一，我们在外部也包裹一个<el-form-item></el-form-item>
+          注意：
+          1. action是全路径
+             为什么？axiosAPI设置了baseURL--axios的请求就不用写了，而我们上传图片发送的请求并不是使用axios发送的
+          2. headers
+             我们知道任何非登录请求，都要授权(就是设置头部，加token)
+             axios拦截器--config.headers['Authorization']='token'这是Axios里面设置请求头的--针对的是axios请求
+             而我们需要写自己的请求头，如下：可参考element-ui组件中上传图片的一些参数说明
+           -->
+          <el-form-item>
+            <el-upload class="upload-demo" action="http://localhost:8888/api/private/v1/upload" :on-success="handleSuccess"
+              :on-remove="handleRemove" list-type="picture" :headers="headers">
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+        </el-tab-pane>
         <el-tab-pane name="5" label="商品内容">商品内容--</el-tab-pane>
       </el-tabs>
     </el-form>
@@ -93,7 +114,11 @@ export default {
       },
       // 动态参数数组
       arrDy: [],
-      arrStatic: []
+      arrStatic: [],
+      // 设置头部参数
+      headers: {
+        Authorization: localStorage.getItem('token')
+      }
     }
   },
   created () {
@@ -161,6 +186,22 @@ export default {
           }
         }
       }
+    },
+
+    // 图片上传方法
+    handleRemove (file, fileList) {
+      console.log('Remove----');
+      console.log(file);
+      console.log(fileList);
+        // 临时路径  file.response.data.tmp_path;
+        // 组件中上传图片的方法：后台返回上传成功，其实是假的，它会把图片放在你服务器的临时路径里。
+        // 而真正的上传是你填完表单后，点击“添加商品”按钮后提交
+      
+    },
+    handleSuccess (response, file, fileList) {
+      console.log('Success----');
+       console.log(response);
+        // 临时路径  file.response.data.tmp_path;
     }
   }
 }

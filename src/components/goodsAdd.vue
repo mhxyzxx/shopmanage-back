@@ -80,9 +80,9 @@
         </el-tab-pane>
         <el-tab-pane name="5" label="商品内容">
           <el-form-item label="商品内容">
-             <el-button class="add-btn" type="success" plain @click="addGoods()">添加商品</el-button>
-             <!-- 使用组件，由官网API可知quill-editor是表单元素，可使用v-model绑定数据 -->
-             <quillEditor class="quill-box" v-model="form.goods_introduce"></quillEditor>
+            <el-button class="add-btn" type="success" plain @click="addGoods()">添加商品</el-button>
+            <!-- 使用组件，由官网API可知quill-editor是表单元素，可使用v-model绑定数据 -->
+            <quillEditor class="quill-box" v-model="form.goods_introduce"></quillEditor>
           </el-form-item>
         </el-tab-pane>
       </el-tabs>
@@ -96,7 +96,7 @@
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
- 
+
 import { quillEditor } from 'vue-quill-editor'
 export default {
   components: {
@@ -123,8 +123,8 @@ export default {
         goods_number: '',
         goods_cat: '',
         goods_introduce: '',
-        pics: '',
-        attrs: ''
+        pics: [],
+        attrs: []
       },
       // 级联使用的数据
       selectOptions: [1, 3, 6], // 默认选择三级分类
@@ -213,23 +213,39 @@ export default {
 
     // 图片上传方法
     handleRemove (file, fileList) {
-      console.log('Remove----');
-      console.log(file);
-      console.log(fileList);
-        // 临时路径  file.response.data.tmp_path;
-        // 组件中上传图片的方法：后台返回上传成功，其实是假的，它会把图片放在你服务器的临时路径里。
-        // 而真正的上传是你填完表单后，点击“添加商品”按钮后提交
-      
+      // console.log('Remove----');
+      // console.log(file);
+      // console.log(fileList);
+      // 临时路径  file.response.data.tmp_path;
+      // 组件中上传图片的方法：后台返回上传成功，其实是假的，它会把图片放在你服务器的临时路径里。
+      // 而真正的上传是你填完表单后，点击“添加商品”按钮后提交
+
+      // findIndex 能遍历、能返回条件return a>b、能返回符合条件的索引（是Es6新增的API）
+      const Index = this.form.pics.findIndex((item) => {  
+        return item.pic === file.response.data.tmp_path  // 看你每个元素的路径是否等于当前选中的文件的路径
+      });
+
+      this.form.pics.splice(Index, 1);
+      console.log(this.form.pics)
     },
     handleSuccess (response, file, fileList) {
-      console.log('Success----');
-       console.log(response);
-        // 临时路径  file.response.data.tmp_path;
+      // console.log('Success----');
+      // console.log(response);
+      // 临时路径  file.response.data.tmp_path;
+      this.form.pics.push({
+        pic: response.data.tmp_path
+      });
+      console.log(this.form.pics)
     },
 
     // 添加商品
     addGoods () {
-
+      // 发送请求前，根据接口的参数先处理下要提交的参数
+      // 处理goods_cat
+      this.form.goods_cat = this.selectOptions.join(',');
+      // 处理pics,经分析它默认是个空数组，里面放的是临时路径，所以你要在有临时路径的地方(handleSuccess,handleRemove)给它赋值
+      // 在this.form.pics-->图片上传方法中使用splice和push处理
+      // 处理attrs
     }
   }
 }

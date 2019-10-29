@@ -78,7 +78,13 @@
             </el-upload>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane name="5" label="商品内容">商品内容--</el-tab-pane>
+        <el-tab-pane name="5" label="商品内容">
+          <el-form-item label="商品内容">
+             <el-button class="add-btn" type="success" plain @click="addGoods()">添加商品</el-button>
+             <!-- 使用组件，由官网API可知quill-editor是表单元素，可使用v-model绑定数据 -->
+             <quillEditor class="quill-box" v-model="form.goods_introduce"></quillEditor>
+          </el-form-item>
+        </el-tab-pane>
       </el-tabs>
     </el-form>
   </el-card>
@@ -86,9 +92,15 @@
 </template>
 
 <script>
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+ 
+import { quillEditor } from 'vue-quill-editor'
 export default {
   components: {
-
+    quillEditor
   },
   data () {
     return {
@@ -202,6 +214,11 @@ export default {
       console.log('Success----');
        console.log(response);
         // 临时路径  file.response.data.tmp_path;
+    },
+
+    // 添加商品
+    addGoods () {
+
     }
   }
 }
@@ -218,5 +235,12 @@ export default {
 .form-wrap {
   height: 350px;
   overflow: auto;
+}
+.form-wrap .add-btn {
+  margin-bottom: 5px;
+}
+/* 富文本编辑的默认高度 */
+.ql-editor .ql-blank {
+  min-height: 200px;
 }
 </style>

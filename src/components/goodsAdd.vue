@@ -105,6 +105,17 @@ export default {
   data () {
     return {
       active: '1',
+      // 表单参数说明：
+      // goods_cat 是以','分割的分类列表，不能为空，但我们是数组[1,2,3]--它要的是"1,2,3"
+      // pics 上传的图片临时路径(对象) 可以为空
+      // pics的类型可以是以下几种情况：
+      // 1. pics: tmp_path 人家说明是对象了，所以这种情况不可能，那么pics要么是是数组或对象，判断可能是临时路径是对象，那么pics就是数组了,又接口API文档可知是数组
+      // 2. pics: {tmp_path: ?}
+      // 3. pics容器:--> {tmp_path: ?}
+      // pics: [{tmp_path: 临时路径}]
+      // attrs 商品的参数(数组) 可以为空，attrs它是来源于静态参数和动态参数
+      // attrs经分析可知：attrs：[{"attr_id":？, "attr_value":？}]-->?的来源是arrDy和arrStatic中每个对象的attr_id和attr_value
+      // 我们需要构造出它想要的数据格式
       form: {
         goods_name: '',
         goods_price: '',

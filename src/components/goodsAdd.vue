@@ -115,7 +115,7 @@ export default {
       // pics: [{tmp_path: 临时路径}]
       // attrs 商品的参数(数组) 可以为空，attrs它是来源于静态参数和动态参数
       // attrs经分析可知：attrs：[{"attr_id":？, "attr_value":？}]-->?的来源是arrDy和arrStatic中每个对象的attr_id和attr_value
-      // 我们需要构造出它想要的数据格式
+      // 我们需要把动态参数和静态参数中所需要的值取出来，然后构造出它想要的数据格式
       form: {
         goods_name: '',
         goods_price: '',
@@ -221,7 +221,7 @@ export default {
       // 而真正的上传是你填完表单后，点击“添加商品”按钮后提交
 
       // findIndex 能遍历、能返回条件return a>b、能返回符合条件的索引（是Es6新增的API）
-      const Index = this.form.pics.findIndex((item) => {  
+      const Index = this.form.pics.findIndex((item) => {
         return item.pic === file.response.data.tmp_path  // 看你每个元素的路径是否等于当前选中的文件的路径
       });
 
@@ -241,11 +241,36 @@ export default {
     // 添加商品
     addGoods () {
       // 发送请求前，根据接口的参数先处理下要提交的参数
-      // 处理goods_cat
+      // 1. 处理goods_cat
       this.form.goods_cat = this.selectOptions.join(',');
-      // 处理pics,经分析它默认是个空数组，里面放的是临时路径，所以你要在有临时路径的地方(handleSuccess,handleRemove)给它赋值
+
+      // 2. 处理pics,经分析它默认是个空数组，里面放的是临时路径，所以你要在有临时路径的地方(handleSuccess,handleRemove)给它赋值
       // 在this.form.pics-->图片上传方法中使用splice和push处理
-      // 处理attrs
+
+      // 3. 处理attrs [{"attr_id":？, "attr_value":？}]
+      // 动态参数数组( 能遍历、能返回数组(你写啥它就会返回啥) （map方法）)
+      const arr1 = this.arrDy.map(item => {
+        return { attr_id: item.attr_id, attr_value: item.attr_vals };
+      });
+      console.log(arr1);
+      // 知识补充：除了上面简便方法外，也可使用如下方法：
+      // const arr1 = [];
+      // const obj1 = { attr_id: "", attr_value: "" };
+      // this.arrDy.forEach(item => {
+      //   obj1.attr_id = item.attr_id;
+      //   obj1.attr_value = item.attr_vals;
+      //   arr1.push(obj1)
+      // })
+      
+      // 静态数据
+      const arr2 = this.arrStatic.map(item => {
+        return { attr_id: item.attr_id, attr_value: item.attr_vals };
+      });
+      console.log(arr2);
+      // 合并数组
+      this.form.attrs = [...arr1, ...arr2];
+      console.log(this.form.attrs);
+
     }
   }
 }

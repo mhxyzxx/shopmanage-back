@@ -7,6 +7,8 @@ import Right from '@/components/right.vue'
 import Role from '@/components/roles.vue'
 import GoodsList from '@/components/goodsList.vue'
 import GoodAdd from '@/components/goodsAdd.vue'
+import CateParams from '@/components/cateParams.vue'
+
 import {
     Message
 } from 'element-ui'
@@ -38,9 +40,14 @@ const router = new Router({
                     component: GoodsList
                 },
                 {
-                    path: '/goodsadd', // 因是后台返回，这里必须是/goods
+                    path: '/goodsadd', // 不是后台返回，这里可以自己随便写
                     name: 'goodsadd',
                     component: GoodAdd
+                },
+                {
+                    path: '/params', // 因是后台返回，这里必须是/params
+                    name: 'params',
+                    component: CateParams
                 }
             ]
         },

@@ -28,12 +28,12 @@
           <!-- 序号 -->
           <el-table-column type="expand" width="100">
             <template slot-scope="scope">
-              <!-- 动态tag编辑标签 -->
-              <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)">
-                {{tag}}
+              <!-- 动态tag编辑标签 scope.row.attr_vals-->
+              <el-tag :key="i" v-for="(item, i) in scope.row.attr_vals" closable :disable-transitions="false" @close="handleClose(scope.row, item)">
+                {{item}}
               </el-tag>
               <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small"
-                @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
+                @keyup.enter.native="handleInputConfirm(scope.row)" @blur="handleInputConfirm(scope.row)">
               </el-input>
               <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
             </template>
@@ -74,7 +74,7 @@ export default {
       // 动态数据
       arrDy: [],
       // 动态编辑tag数据
-      dynamicTags: ['标签一', '标签二', '标签三'],
+      // dynamicTags: ['标签一', '标签二', '标签三'],换成了我们自己的数组
       inputVisible: false,
       inputValue: ''
     }
@@ -102,7 +102,7 @@ export default {
       }
       // 获取动态参数数据
       const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`);
-      // console.log(res);
+      console.log(res);
       const { meta: { msg, status }, data } = res.data;
       if (status === 200) {
         this.arrDy = data;
@@ -114,9 +114,10 @@ export default {
       }
     },
 
-    // 动态编辑标签相关方法
-    handleClose (tag) {
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+    // 动态tag编辑标签相关方法
+    handleClose (obj, item) {
+      // this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+      obj.attr_vals.splice(obj.attr_vals.indexOf(item), 1);
     },
 
     showInput () {
@@ -126,10 +127,10 @@ export default {
       });
     },
 
-    handleInputConfirm () {
+    handleInputConfirm (obj) {
       let inputValue = this.inputValue;
       if (inputValue) {
-        this.dynamicTags.push(inputValue);
+        obj.attr_vals.push(inputValue);
       }
       this.inputVisible = false;
       this.inputValue = '';

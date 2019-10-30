@@ -28,7 +28,14 @@
           <!-- 序号 -->
           <el-table-column type="expand" width="100">
             <template slot-scope="scope">
-              <span>33333</span>
+              <!-- 动态tag编辑标签 -->
+              <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)">
+                {{tag}}
+              </el-tag>
+              <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small"
+                @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
+              </el-input>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
             </template>
           </el-table-column>
           <el-table-column type="index" label="#" width="100"></el-table-column>
@@ -65,7 +72,11 @@ export default {
       },
       active: '1',
       // 动态数据
-      arrDy: []
+      arrDy: [],
+      // 动态编辑tag数据
+      dynamicTags: ['标签一', '标签二', '标签三'],
+      inputVisible: false,
+      inputValue: ''
     }
   },
   created () {
@@ -101,6 +112,27 @@ export default {
           console.log(item.attr_vals);
         })
       }
+    },
+
+    // 动态编辑标签相关方法
+    handleClose (tag) {
+      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+    },
+
+    showInput () {
+      this.inputVisible = true;
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+
+    handleInputConfirm () {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        this.dynamicTags.push(inputValue);
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
     }
   }
 }
@@ -119,4 +151,20 @@ export default {
 .cate-wrap .set-btn {
   margin-bottom: 10px;
 }
+/* 动态编辑标签样式 */
+.el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
+  }
 </style>

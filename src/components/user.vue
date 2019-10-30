@@ -19,7 +19,7 @@
       </el-col>
     </el-row>
     <!-- 表格展示 -->
-    <el-table height="250px" :data="listData" style="width: 100%">
+    <el-table v-loading="loading" height="250px" :data="listData" style="width: 100%">
       <!--
          id: 500
          username: "admin"
@@ -176,7 +176,8 @@ export default {
       selectVal: -1,
       // currentUsername: '',
       rolesArr: [], // 角色数组
-      currentRoleId: -1
+      currentRoleId: -1,
+      loading: true //加载动画效果，默认为true
     };
   },
   created () {
@@ -197,7 +198,8 @@ export default {
       if (status === 200) {
         this.listData = data.users;
         this.total = data.total;
-
+        // 成功后，关闭loading动画
+        this.loading = false;
         // console.log(this.listData)
       }
     },

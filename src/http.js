@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Message } from 'element-ui'
 const HttpServer = {}
 
 HttpServer.install = function(Vue) {
@@ -6,8 +7,7 @@ HttpServer.install = function(Vue) {
     axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 
     // this.$http.get(url)-->请求拦截器处理-->发送请求
-    axios.interceptors.request.use(
-        function(config) {
+    axios.interceptors.request.use(function(config) {
             // 在发送请求之前做些什么
             console.log('请求拦截器被触发了-----')
 
@@ -28,7 +28,22 @@ HttpServer.install = function(Vue) {
             // 对于请求错误做些什么
             return Promise.reject(error)
         }
-    )
+    );
+
+    // 响应拦截器的处理
+    // axios.interceptors.response.use(function(response) {
+    //     // 对响应数据做点什么
+    //     console.log('res响应拦截器---');
+    //     // 统一处理status非200和201的情况--->给出提示
+    //     const { meta: { msg, status }, data } = response.data;
+    //     if (status !== 200 && status !== 201) {
+    //         Message.warning(msg);
+    //     }
+    //     return response;
+    // }, function(error) {
+    //     // 对响应错误做点什么
+    //     return Promise.reject(error);
+    // });
 
     // 4. 添加实例方法
     // 给Vue实例的原型上添加成员

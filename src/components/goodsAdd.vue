@@ -169,6 +169,11 @@ export default {
         if (this.selectOptions.length !== 3) {
           // 提示
           this.$message.error('请先选择三级分类！')
+          if (this.active === "2") {
+            this.arrDy = []; // 清空数组
+          } else {
+            this.arrStatic = []; // 清空数组
+          }
           return;
         }
         // 获取静态数组
@@ -226,7 +231,7 @@ export default {
       });
 
       this.form.pics.splice(Index, 1);
-      console.log(this.form.pics)
+      // console.log(this.form.pics)
     },
     handleSuccess (response, file, fileList) {
       // console.log('Success----');
@@ -235,11 +240,11 @@ export default {
       this.form.pics.push({
         pic: response.data.tmp_path
       });
-      console.log(this.form.pics)
+      // console.log(this.form.pics)
     },
 
     // 添加商品
-    addGoods () {
+    async addGoods () {
       // 发送请求前，根据接口的参数先处理下要提交的参数
       // 1. 处理goods_cat
       this.form.goods_cat = this.selectOptions.join(',');
@@ -252,7 +257,7 @@ export default {
       const arr1 = this.arrDy.map(item => {
         return { attr_id: item.attr_id, attr_value: item.attr_vals };
       });
-      console.log(arr1);
+      // console.log(arr1);
       // 知识补充：除了上面简便方法外，也可使用如下方法：
       // const arr1 = [];
       // const obj1 = { attr_id: "", attr_value: "" };
@@ -261,15 +266,31 @@ export default {
       //   obj1.attr_value = item.attr_vals;
       //   arr1.push(obj1)
       // })
-      
+
       // 静态数据
       const arr2 = this.arrStatic.map(item => {
         return { attr_id: item.attr_id, attr_value: item.attr_vals };
       });
-      console.log(arr2);
+      // console.log(arr2);
       // 合并数组
       this.form.attrs = [...arr1, ...arr2];
-      console.log(this.form.attrs);
+      // console.log(this.form.attrs);
+
+      // 发送请求
+      const res = await this.$http.post(`goods`, this.form);
+      const { meta: { msg, status }, data } = res.data;
+      console.log(res)
+      if (status === 201) {
+        // 添加成功的提示
+        this.$message.success(msg);
+        // 回到列表页
+        this.$router.push({
+          name: "goods"
+        })
+      } else {
+        // 添加失败的提示
+        this.$message.error(msg);
+      }
 
     }
   }

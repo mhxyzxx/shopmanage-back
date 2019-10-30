@@ -5,8 +5,8 @@
     <!-- 带关闭按钮的alert警告框 -->
     <el-alert class="alet-box" title="注意：只允许为第三级分类设置参数" type="warning" show-icon>
     </el-alert>
+    <!-- 级联选择器-商品分类选择组件 -->
     <el-form :model="form" label-position="left" label-width="120px" class="form-wrap">
-      <!-- 级联选择器-商品分类选择组件 -->
       <el-form-item label="请选择商品分类">
         <!-- 表单元素：级联选择器
             options是数据源
@@ -14,10 +14,15 @@
             :props="{ expandTrigger: 'hover' }" 
              -->
         {{ selectOptions }}
-        <el-cascader expand-trigger='hover' :show-all-levels="false" clearable v-model="selectOptions" :options="options" :props="defaultProp"
-          @change="handleChange"></el-cascader>
+        <el-cascader expand-trigger='hover' :show-all-levels="false" clearable v-model="selectOptions" :options="options"
+          :props="defaultProp" @change="handleChange"></el-cascader>
       </el-form-item>
     </el-form>
+    <!-- tab切换组件 -->
+    <el-tabs type="border-card" v-model="active">
+      <el-tab-pane name="1" label="动态参数">动态参数</el-tab-pane>
+      <el-tab-pane name="2" label="静态参数">静态参数</el-tab-pane>
+    </el-tabs>
   </el-card>
 </template>
 
@@ -38,6 +43,9 @@ export default {
         children: 'children', // key-value相同时，可以不写，见文档说明
         // expandTrigger: 'hover'
       },
+      active: '1',
+      // 动态数据
+      arrDy: []
     }
   },
   created () {
@@ -47,16 +55,32 @@ export default {
     // 获取三级商品分类的数据
     async getGoodsCate () {
       const res = await this.$http.get(`categories?type=3`);
-      console.log(res);
+      // console.log(res);
       const { meta: { msg, status }, data } = res.data;
       if (status === 200) {
         this.options = data;
-        console.log(this.options)
+        // console.log(this.options)
       }
     },
     // 显示的label一变化，他就会触发
-    handleChange () {
-      console.log('级联的change触发了---');
+    async handleChange () {
+      // console.log('级联的change触发了---');
+      if (this.selectOptions.length !== 3) {
+        this.$message.warning('请选择三级分类！');
+        return;
+      }
+      // 获取动态参数数据
+      const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`);
+      // console.log(res);
+      const { meta: { msg, status }, data } = res.data;
+      if (status === 200) {
+        this.arrDy = data;
+        console.log('动态数据----');
+        this.arrDy.forEach(item => {
+          item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',');
+          console.log(item.attr_vals);
+        })
+      }
     }
   }
 }

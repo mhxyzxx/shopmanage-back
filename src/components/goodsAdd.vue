@@ -38,7 +38,7 @@
             <!-- 表单元素：级联选择器
             options是数据源
             selectOptions: []是数组类型的，放你所选中的option的value值
-            :props="{ expandTrigger: 'hover' }"
+            :props="{ expandTrigger: 'hover' }" 
              -->
             {{ selectOptions }}
             <el-cascader clearable v-model="selectOptions" :options="options" :props="defaultProp" @change="handleChange"></el-cascader>
@@ -129,7 +129,7 @@ export default {
       // 级联使用的数据
       selectOptions: [1, 3, 6], // 默认选择三级分类
       options: [],
-      defaultProp: {
+      defaultProp: { // 配置项
         label: 'cat_name',
         value: 'cat_id',
         children: 'children', // key-value相同时，可以不写，见文档说明

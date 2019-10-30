@@ -20,7 +20,27 @@
     </el-form>
     <!-- tab切换组件 -->
     <el-tabs type="border-card" v-model="active">
-      <el-tab-pane name="1" label="动态参数">动态参数</el-tab-pane>
+      <el-tab-pane name="1" label="动态参数">
+        <!-- 按钮默认是不能点击的 -->
+        <el-button type="primary" class="set-btn" size="small" disabled>设置动态参数</el-button>
+        <!-- 带展开功能的表格 -->
+        <el-table height="360px" border stripe :data="arrDy" style="width: 100%">
+          <!-- 序号 -->
+          <el-table-column type="expand" width="100">
+            <template slot-scope="scope">
+              <span>33333</span>
+            </template>
+          </el-table-column>
+          <el-table-column type="index" label="#" width="100"></el-table-column>
+          <el-table-column prop="attr_name" label="属性名称"> </el-table-column>
+          <el-table-column label="操作" width="100">
+            <template slot-scope="scope">
+              <el-button plain size="mini" type="primary" icon="el-icon-edit" circle></el-button>
+              <el-button plain size="mini" type="danger" icon="el-icon-delete" circle></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
       <el-tab-pane name="2" label="静态参数">静态参数</el-tab-pane>
     </el-tabs>
   </el-card>
@@ -95,5 +115,8 @@ export default {
 }
 .cate-wrap .form-wrap {
   margin-top: 10px;
+}
+.cate-wrap .set-btn {
+  margin-bottom: 10px;
 }
 </style>

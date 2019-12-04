@@ -20,12 +20,12 @@ export default {
   },
   mounted () {
     // echartinit操作的dom,而只有mounted中才有dom,如果是用created就会报错(它还没有dom元素)
-    this.initcharts();
+    this.initcharts()
   },
   methods: {
     async initcharts () {
       // 基于准备好的dom，初始化echarts实例
-      var myChart = echarts.init(document.getElementById('main'));
+      var myChart = echarts.init(document.getElementById('main'))
 
       // 指定图表的配置项和数据
       const option1 = {
@@ -110,7 +110,7 @@ export default {
             data: [820, 932, 901, 934, 1290, 1330, 1320]
           }
         ]
-      };
+      }
 
       // 经接口文档分析，如下：
       // 请求路径：reports/:type,可能参数的情况，如下：
@@ -118,20 +118,19 @@ export default {
       // 2. reports/type=1
       // 3. reports/type/1
       // 请求数据
-      const res = await this.$http.get(`reports/type/1`);
-      console.log(res);
-      const option2 = res.data.data;
-      const option = {...option1, ...option2};
-      
-      // 使用刚指定的配置项和数据显示图表。
-      myChart.setOption(option);
+      const res = await this.$http.get(`reports/type/1`)
+      console.log(res)
+      const option2 = res.data.data
+      const option = { ...option1, ...option2 }
 
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option)
     }
   }
 }
 </script>
 
-<style>
+<style scope>
 .echart-wrap {
   height: 100%;
 }

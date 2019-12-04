@@ -102,17 +102,15 @@ export default {
       if (status === 200) {
         this.rolesList = data
         // console.log(this.rolesList)
-
       } else {
-        this.$message.error(msg);
+        this.$message.error(msg)
       }
-
     },
 
     // 设置角色权限功能-->打开对话框及树形结构配置和展示
     async showdialogSetRights (role) {
       this.dialogFormVisibleRight = true
-      this.currentRoleId = role.id //获取当前角色id
+      this.currentRoleId = role.id // 获取当前角色id
       const res = await this.$http.get(`rights/tree`)
       console.log(res)
       const { data, meta: { msg, status } } = res.data
@@ -133,7 +131,7 @@ export default {
         // this.expandArr = temp
 
         // 获取当前角色权限的id-->那么，就要先拿到当前角色的id
-        var temp2 = [];
+        var temp2 = []
         console.log(role)
         role.children.forEach((item1) => {
           // temp2.push(item1.id)
@@ -146,11 +144,9 @@ export default {
         })
         // console.log(temp2)
         this.checkArr = temp2
-
       } else {
-        this.$message.error(msg);
+        this.$message.error(msg)
       }
-
     },
     // 分配角色权限功能
     // 取消当前角色的权限功能-->发送请求
@@ -174,7 +170,7 @@ export default {
       // console.log(newRoleIdArr)
 
       // 3.发送请求，设置权限
-      const res = await this.$http.post(`roles/${this.currentRoleId}/rights`, { rids: newRoleIdArr.join(",") })
+      const res = await this.$http.post(`roles/${this.currentRoleId}/rights`, { rids: newRoleIdArr.join(',') })
       // console.log(res)
       const { meta: { msg, status } } = res.data
       if (status === 200) {
@@ -183,19 +179,17 @@ export default {
       } else {
         this.$message.error(msg)
       }
-
-
     },
     async delRight (role, right) {
       const res = await this.$http.delete(`roles/${role.id}/rights/${right.id}`)
-      console.log(res);
+      console.log(res)
       const { data, meta: { msg, status } } = res.data
       if (status === 200) {
         this.$message.success(msg)
         // this.getRolesList()
         // 取消权限成功后会返回，当前角色剩余的权限
         // 只更新当前的角色权限
-        role.children = data;
+        role.children = data
       } else {
         this.$message.error(msg)
       }
@@ -204,7 +198,7 @@ export default {
 }
 </script>
 
-<style>
+<style scope>
 .box-card {
   height: 100%;
 }

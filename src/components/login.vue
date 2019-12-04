@@ -79,7 +79,7 @@ export default {
 }
 </script>
 
-<style>
+<style scope>
 .login-wrap {
   /* 注意: 百分比布局 父元素height，要给它的父元素设置百分比才会生效，要找到它的直接父元素 */
   height: 100%;

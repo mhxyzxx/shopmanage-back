@@ -15,7 +15,7 @@
       <el-step title="商品图片"></el-step>
       <el-step title="商品内容"></el-step>
     </el-steps>
-    <!-- 标签页 
+    <!-- 标签页
     1. 默认active初始值和name的值都是1字符串类型的
     2. 点击5个tab--被选中的tab的name值赋值给v-model的值，此时active=5
     -->
@@ -38,7 +38,7 @@
             <!-- 表单元素：级联选择器
             options是数据源
             selectOptions: []是数组类型的，放你所选中的option的value值
-            :props="{ expandTrigger: 'hover' }" 
+            :props="{ expandTrigger: 'hover' }"
              -->
             {{ selectOptions }}
             <el-cascader clearable v-model="selectOptions" :options="options" :props="defaultProp" @change="handleChange"></el-cascader>
@@ -145,54 +145,54 @@ export default {
     }
   },
   created () {
-    this.getGoodsCate();
+    this.getGoodsCate()
   },
   methods: {
     // 获取三级商品分类的数据
     async getGoodsCate () {
-      const res = await this.$http.get(`categories?type=3`);
-      console.log(res);
-      const { meta: { msg, status }, data } = res.data;
+      const res = await this.$http.get(`categories?type=3`)
+      console.log(res)
+      const { meta: { msg, status }, data } = res.data
       if (status === 200) {
-        this.options = data;
+        this.options = data
         console.log(this.options)
       }
     },
     handleChange (value) {
-      console.log(value);
+      console.log(value)
     },
     // 点击任何tab都会触发该事件
     async changeTab () {
       // 1. 如果点了第二个tab
-      if (this.active === "2" || this.active === "3") {
+      if (this.active === '2' || this.active === '3') {
         // 2. 如果没有选择三级分类，给出相应提示
         if (this.selectOptions.length !== 3) {
           // 提示
           this.$message.error('请先选择三级分类！')
-          if (this.active === "2") {
-            this.arrDy = []; // 清空数组
+          if (this.active === '2') {
+            this.arrDy = [] // 清空数组
           } else {
-            this.arrStatic = []; // 清空数组
+            this.arrStatic = [] // 清空数组
           }
-          return;
+          return
         }
         // 获取静态数组
-        if (this.active === "3") {
-          const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=only`);
-          const { meta: { msg, status }, data } = res.data;
+        if (this.active === '3') {
+          const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=only`)
+          const { meta: { msg, status }, data } = res.data
           if (status === 200) {
-            this.arrStatic = data;
-            console.log(this.arrStatic);
+            this.arrStatic = data
+            console.log(this.arrStatic)
           }
         }
         // 获取动态参数数据
-        if (this.active === "2") {
-          const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`);
+        if (this.active === '2') {
+          const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`)
           // console.log(res);
-          const { meta: { msg, status }, data } = res.data;
+          const { meta: { msg, status }, data } = res.data
           if (status === 200) {
-            this.arrDy = data;
-            console.log(this.arrDy);
+            this.arrDy = data
+            console.log(this.arrDy)
             // this.arrDy中的attr_vals是字符串，并不是我们想要的结果，我们需要的是一个数组
             // "abc, def, efef" -> [abc, def, efef]
             this.arrDy.forEach(item => {
@@ -207,9 +207,9 @@ export default {
               //   item.attr_vals = item.attr_vals.trim().split(',');
               // }
               // 以上判断还可改写为三元表达式
-              item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',');
+              item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',')
 
-              console.log(item.attr_vals);
+              console.log(item.attr_vals)
             })
           }
         }
@@ -227,10 +227,10 @@ export default {
 
       // findIndex 能遍历、能返回条件return a>b、能返回符合条件的索引（是Es6新增的API）
       const Index = this.form.pics.findIndex((item) => {
-        return item.pic === file.response.data.tmp_path  // 看你每个元素的路径是否等于当前选中的文件的路径
-      });
+        return item.pic === file.response.data.tmp_path // 看你每个元素的路径是否等于当前选中的文件的路径
+      })
 
-      this.form.pics.splice(Index, 1);
+      this.form.pics.splice(Index, 1)
       // console.log(this.form.pics)
     },
     handleSuccess (response, file, fileList) {
@@ -239,7 +239,7 @@ export default {
       // 临时路径  file.response.data.tmp_path;
       this.form.pics.push({
         pic: response.data.tmp_path
-      });
+      })
       // console.log(this.form.pics)
     },
 
@@ -247,7 +247,7 @@ export default {
     async addGoods () {
       // 发送请求前，根据接口的参数先处理下要提交的参数
       // 1. 处理goods_cat
-      this.form.goods_cat = this.selectOptions.join(',');
+      this.form.goods_cat = this.selectOptions.join(',')
 
       // 2. 处理pics,经分析它默认是个空数组，里面放的是临时路径，所以你要在有临时路径的地方(handleSuccess,handleRemove)给它赋值
       // 在this.form.pics-->图片上传方法中使用splice和push处理
@@ -255,8 +255,8 @@ export default {
       // 3. 处理attrs [{"attr_id":？, "attr_value":？}]
       // 动态参数数组( 能遍历、能返回数组(你写啥它就会返回啥) （map方法）)
       const arr1 = this.arrDy.map(item => {
-        return { attr_id: item.attr_id, attr_value: item.attr_vals };
-      });
+        return { attr_id: item.attr_id, attr_value: item.attr_vals }
+      })
       // console.log(arr1);
       // 知识补充：除了上面简便方法外，也可使用如下方法：
       // const arr1 = [];
@@ -269,35 +269,34 @@ export default {
 
       // 静态数据
       const arr2 = this.arrStatic.map(item => {
-        return { attr_id: item.attr_id, attr_value: item.attr_vals };
-      });
+        return { attr_id: item.attr_id, attr_value: item.attr_vals }
+      })
       // console.log(arr2);
       // 合并数组
-      this.form.attrs = [...arr1, ...arr2];
+      this.form.attrs = [...arr1, ...arr2]
       // console.log(this.form.attrs);
 
       // 发送请求
-      const res = await this.$http.post(`goods`, this.form);
-      const { meta: { msg, status }, data } = res.data;
+      const res = await this.$http.post(`goods`, this.form)
+      const { meta: { msg, status }, data } = res.data
       console.log(res)
       if (status === 201) {
         // 添加成功的提示
-        this.$message.success(msg);
+        this.$message.success(msg)
         // 回到列表页
         this.$router.push({
-          name: "goods"
+          name: 'goods'
         })
       } else {
         // 添加失败的提示
-        this.$message.error(msg);
+        this.$message.error(msg)
       }
-
     }
   }
 }
 </script>
 
-<style>
+<style scope>
 .add-goods-wrap {
   height: 100%;
 }

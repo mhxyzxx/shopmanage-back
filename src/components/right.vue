@@ -37,18 +37,18 @@ export default {
   },
   methods: {
     async getTableList () {
-      const res = await this.$http.get(`rights/list`);
+      const res = await this.$http.get(`rights/list`)
       // console.log(res);
-      const { data, meta: { msg, status } } = res.data;
+      const { data, meta: { msg, status } } = res.data
       if (status === 200) {
-        this.rightList = data;
+        this.rightList = data
       }
     }
   }
 }
 </script>
 
-<style>
+<style scope>
 .box-card {
   height: 100%;
 }

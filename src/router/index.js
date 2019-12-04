@@ -9,58 +9,64 @@ import Role from '@/components/roles.vue'
 import GoodsList from '@/components/goodsList.vue'
 import GoodAdd from '@/components/goodsAdd.vue'
 import CateParams from '@/components/cateParams.vue'
+import GoodsCate from '@/components/goodsCate.vue'
 import Reports from '@/components/reports.vue'
 Vue.use(Router)
 
 const router = new Router({
-    routes: [{
-            path: '/',
-            name: 'home',
-            component: Home,
-            children: [{
-                    path: '/users',
-                    name: 'users',
-                    component: User
-                },
-                {
-                    path: '/rights',
-                    name: 'rights',
-                    component: Right
-                },
-                {
-                    path: '/roles',
-                    name: 'roles',
-                    component: Role
-                },
-                {
-                    path: '/goods', // 因是后台返回，这里必须是/goods
-                    name: 'goods',
-                    component: GoodsList
-                },
-                {
-                    path: '/goodsadd', // 不是后台返回，这里可以自己随便写
-                    name: 'goodsadd',
-                    component: GoodAdd
-                },
-                {
-                    path: '/params', // 因是后台返回，这里必须是/params
-                    name: 'params',
-                    component: CateParams
-                },
-                {
-                    path: '/reports', // 因是后台返回，这里必须是/reports
-                    name: 'reports',
-                    component: Reports
-                },
+  routes: [{
+    path: '/',
+    name: 'home',
+    component: Home,
+    children: [{
+      path: '/users',
+      name: 'users',
+      component: User
+    },
+    {
+      path: '/rights',
+      name: 'rights',
+      component: Right
+    },
+    {
+      path: '/roles',
+      name: 'roles',
+      component: Role
+    },
+    {
+      path: '/goods', // 因是后台返回，这里必须是/goods
+      name: 'goods',
+      component: GoodsList
+    },
+    {
+      path: '/goodsadd', // 不是后台返回，这里可以自己随便写
+      name: 'goodsadd',
+      component: GoodAdd
+    },
+    {
+      path: '/params', // 因是后台返回，这里必须是/params
+      name: 'params',
+      component: CateParams
+    },
+    {
+      path: '/categories', // 因是后台返回，这里必须是/params
+      name: 'categories',
+      component: GoodsCate
+    },
+    {
+      path: '/reports', // 因是后台返回，这里必须是/reports
+      name: 'reports',
+      component: Reports
+    }
 
-            ]
-        },
-        {
-            path: '/login',
-            name: 'login',
-            component: Login
-        }
     ]
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  }
+  ]
 })
 
 // 路由导航守卫(保安)
@@ -71,28 +77,28 @@ const router = new Router({
  * next---> 方法next()-->让路由配置继续生效
  */
 router.beforeEach((to, from, next) => {
-    // console.log('路由守卫执行---')
-    // console.log(to)
-    // console.log(from)
-    // next()
-    // 如果要是login-->next
-    // 如果不是login,1. 判断是否有token,如果没有就去登录，如果有就next
-    if (to.name === 'login') {
-        next()
+  // console.log('路由守卫执行---')
+  // console.log(to)
+  // console.log(from)
+  // next()
+  // 如果要是login-->next
+  // 如果不是login,1. 判断是否有token,如果没有就去登录，如果有就next
+  if (to.name === 'login') {
+    next()
+  } else {
+    // 1.!token --> 去登录
+    const token = localStorage.getItem('token')
+    if (!token) {
+      // 并给出提示信息
+      Message.warning('请先登录')
+      router.push({
+        name: 'login'
+      })
     } else {
-        // 1.!token --> 去登录
-        const token = localStorage.getItem('token')
-        if (!token) {
-            // 并给出提示信息
-            Message.warning('请先登录')
-            router.push({
-                name: 'login'
-            })
-        } else {
-            //2. 有token --> next()
-            next()
-        }
+      // 2. 有token --> next()
+      next()
     }
+  }
 })
 
 export default router

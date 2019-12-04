@@ -19,6 +19,7 @@ HttpServer.install = function(Vue) {
                     // 这个是axios给你提供的设置的请求,也可以，我们也可使用config里面的headers进行设置
                     // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN // 设置请求头
                 config.headers['Authorization'] = AUTH_TOKEN // 设置请求头
+                    // 也可以这样写config.headers.Authorization = token
             }
 
             // console.log(config)
@@ -46,7 +47,7 @@ HttpServer.install = function(Vue) {
     // });
 
     // 4. 添加实例方法
-    // 给Vue实例的原型上添加成员
+    // 给Vue实例的原型上添加成员(这是vue官网开发插件的第四种方式，挂载在原型上的)
     Vue.prototype.$http = axios
 }
 export default HttpServer

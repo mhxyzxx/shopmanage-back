@@ -149,7 +149,7 @@ export default {
     // 动态导航功能
     async getMenus () {
       const res = await this.$http.get(`menus`)
-      console.log(res)
+      // console.log(res)
       const { data, meta: { msg, status } } = res.data
       if (status === 200) {
         this.$message.success(msg)
@@ -174,7 +174,7 @@ export default {
 }
 </script>
 
-<style>
+<style scope>
 .container {
   height: 100%;
 }

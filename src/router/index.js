@@ -10,6 +10,7 @@ import GoodsList from '@/components/goodsList.vue'
 import GoodAdd from '@/components/goodsAdd.vue'
 import CateParams from '@/components/cateParams.vue'
 import GoodsCate from '@/components/goodsCate.vue'
+import Order from '@/components/order.vue'
 import Reports from '@/components/reports.vue'
 Vue.use(Router)
 
@@ -54,11 +55,15 @@ const router = new Router({
       component: GoodsCate
     },
     {
+      path: '/orders', // 因是后台返回，这里必须是/params
+      name: 'orders',
+      component: Order
+    },
+    {
       path: '/reports', // 因是后台返回，这里必须是/reports
       name: 'reports',
       component: Reports
     }
-
     ]
   },
   {

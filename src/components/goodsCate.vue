@@ -136,6 +136,7 @@ export default {
       // 获取两级分类的数据
       const res = await this.$http.get(`categories?type=2`)
       this.caslist = res.data.data
+      console.log(this.caslist)
 
       this.dialogFormVisibleAdd = true
     },

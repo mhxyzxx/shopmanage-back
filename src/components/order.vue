@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import CityArr from '@/assets/city_data2017_element.js'
 export default {
   data () {
     return {
@@ -52,6 +53,13 @@ export default {
       },
       // 级联选择器要绑定的数据
       catlist: [],
+      // 说明：如果props属性绑定的默认值defaultProp对象中的key-value是一样的。这个默认值defaultProp对象可以不写。
+      // 由我们准备的后台数据可知是value,label,children和defaultProp对象的属性值是一样的，所以，这里可以省略不写。
+      // defaultProp: {
+      //   value: 'value',
+      //   label: 'label',
+      //   children: 'children'
+      // },
       selectedOptions: []
     }
   },
@@ -65,7 +73,7 @@ export default {
       this.list = res.data.data.goods
     },
     showEditdia () {
-      this.catlist = []
+      this.catlist = CityArr
       this.dialogFormVisible = true
     }
   }

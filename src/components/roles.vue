@@ -102,8 +102,6 @@ export default {
       if (status === 200) {
         this.rolesList = data
         // console.log(this.rolesList)
-      } else {
-        this.$message.error(msg)
       }
     },
 
@@ -144,8 +142,6 @@ export default {
         })
         // console.log(temp2)
         this.checkArr = temp2
-      } else {
-        this.$message.error(msg)
       }
     },
     // 分配角色权限功能
@@ -176,8 +172,6 @@ export default {
       if (status === 200) {
         this.$message.success(msg)
         this.dialogFormVisibleRight = false
-      } else {
-        this.$message.error(msg)
       }
     },
     async delRight (role, right) {
@@ -190,8 +184,6 @@ export default {
         // 取消权限成功后会返回，当前角色剩余的权限
         // 只更新当前的角色权限
         role.children = data
-      } else {
-        this.$message.error(msg)
       }
     }
   }

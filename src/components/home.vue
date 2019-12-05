@@ -154,8 +154,6 @@ export default {
       if (status === 200) {
         this.$message.success(msg)
         this.menusArr = data
-      } else {
-        this.$message.error(msg)
       }
     },
     // 处理退出登录

@@ -52,10 +52,7 @@ export default {
         this.$router.push({
           name: 'home'
         })
-      } else {
-        this.$message.error(msg)
       }
-
       // .then之后其实在处理异步请求的结果
       // .then((res) => {
       //   console.log(res)

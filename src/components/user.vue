@@ -249,8 +249,6 @@ export default {
         // 提示添加成功
         this.$message.success(msg)
         this.getUsersList()
-      } else {
-        this.$message.error(msg)
       }
     },
 
@@ -309,8 +307,6 @@ export default {
         this.$message.success(msg)
         this.dialogFormVisibleEdit = false
         this.getUsersList()
-      } else {
-        this.$message.error(msg)
       }
     },
 
@@ -345,8 +341,6 @@ export default {
       const { meta, data } = res.data
       if (meta.status === 200) {
         this.rolesArr = data
-      } else {
-        this.$message.error(msg)
       }
 
       // 给下拉框v-model绑定的seletVal赋值
@@ -367,8 +361,6 @@ export default {
         this.$message.success(meta.msg)
         // 关闭对话框
         this.dialogFormVisibleSetRole = false
-      } else {
-        this.$message.error(meta.msg)
       }
     }
 

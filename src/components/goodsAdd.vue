@@ -287,9 +287,6 @@ export default {
         this.$router.push({
           name: 'goods'
         })
-      } else {
-        // 添加失败的提示
-        this.$message.error(msg)
       }
     }
   }

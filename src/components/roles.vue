@@ -4,24 +4,26 @@
     <comBread level1="权限管理" level2="角色列表"></comBread>
     <!-- 添加角色按钮 -->
     <el-button type="primary" class="add-role" size="small">添加角色</el-button>
-    <!-- 角色列表表格展示 -->
-    <el-table height="330px" :data="rolesList" style="width: 100%">
+    <!-- 角色列表表格展示
+      :row-key="getRowKeys" // 获取当前行id
+      :expand-row-keys="expands" //只展开一行放入当前行id-->
+    <el-table height="330px" :data="rolesList" style="width: 100%" @expand-change="fn">
       <el-table-column type="expand" width="80">
         <template slot-scope="scope">
           <!-- 行列布局 -->
-          <el-row class="level1" v-for="(item1, i) in scope.row.children" :key="i">
+          <el-row class="level1" v-for="(item1, i) in scope.row.children" :key="item1.id">
             <el-col :span="4">
               <el-tag type="primary" closable @close="delRight(scope.row, item1)">{{item1.authName}}</el-tag>
               <i class="el-icon-arrow-right"></i>
             </el-col>
             <el-col :span="20">
-              <el-row class="level2" v-for="(item2, i) in item1.children" :key="i">
+              <el-row class="level2" v-for="(item2, i) in item1.children" :key="item2.id">
                 <el-col :span="4">
                   <el-tag type="success" closable @close="delRight(scope.row, item2)">{{item2.authName}}</el-tag>
                   <i class="el-icon-arrow-right"></i>
                 </el-col>
                 <el-col :span="20">
-                  <el-tag type="warning" closable class="level3" v-for="(item3, i) in item2.children" :key="i" @close="delRight(scope.row, item3)">
+                  <el-tag type="warning" closable class="level3" v-for="(item3, i) in item2.children" :key="item3.id" @close="delRight(scope.row, item3)">
                     {{item3.authName}}
                   </el-tag>
                 </el-col>
@@ -36,7 +38,7 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column type="index" label="#" width="180"></el-table-column>
+      <el-table-column prop="id" label="#" width="180"></el-table-column>
       <el-table-column prop="roleName" label="角色名称" width="200"></el-table-column>
       <el-table-column prop="roleDesc" label="角色描述" width="200"></el-table-column>
 
@@ -93,11 +95,23 @@ export default {
     this.getRolesList()
   },
   methods: {
+    // 让表格只能展开一行，其它行都关闭
+    fn (row, expandedRows) {
+      // // 需求：你想只展开一行，那么，你只需在expandedRows数组中永远只保存一个元素，删除上个元素就行
+      // // 展开第一个[a]
+      // // 如果[]length>1,展开第二个时[a,b],那么就删除上一个
+      if (expandedRows.length > 1) {
+        // console.log(expandedRows.length)
+        expandedRows.shift()
+        console.log(expandedRows)
+        console.log(expandedRows.length)
+      }
+    },
     // 获取角色列表数据
     async getRolesList () {
       const res = await this.$http.get('roles')
       console.log(res)
-      const { data, meta: { msg, status } } = res.data
+      const { data, meta: { status } } = res.data
 
       if (status === 200) {
         this.rolesList = data
@@ -111,7 +125,7 @@ export default {
       this.currentRoleId = role.id // 获取当前角色id
       const res = await this.$http.get(`rights/tree`)
       console.log(res)
-      const { data, meta: { msg, status } } = res.data
+      const { data, meta: { status } } = res.data
       if (status === 200) {
         this.treeList = data
         // console.log(this.treeList)

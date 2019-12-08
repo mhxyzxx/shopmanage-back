@@ -152,7 +152,7 @@ export default {
     async getGoodsCate () {
       const res = await this.$http.get(`categories?type=3`)
       console.log(res)
-      const { meta: { msg, status }, data } = res.data
+      const { meta: { status }, data } = res.data
       if (status === 200) {
         this.options = data
         console.log(this.options)
@@ -179,7 +179,7 @@ export default {
         // 获取静态数组
         if (this.active === '3') {
           const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=only`)
-          const { meta: { msg, status }, data } = res.data
+          const { meta: { status }, data } = res.data
           if (status === 200) {
             this.arrStatic = data
             console.log(this.arrStatic)
@@ -189,7 +189,7 @@ export default {
         if (this.active === '2') {
           const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`)
           // console.log(res);
-          const { meta: { msg, status }, data } = res.data
+          const { meta: { status }, data } = res.data
           if (status === 200) {
             this.arrDy = data
             console.log(this.arrDy)
@@ -278,7 +278,7 @@ export default {
 
       // 发送请求
       const res = await this.$http.post(`goods`, this.form)
-      const { meta: { msg, status }, data } = res.data
+      const { meta: { msg, status } } = res.data
       console.log(res)
       if (status === 201) {
         // 添加成功的提示

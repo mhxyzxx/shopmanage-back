@@ -18,7 +18,7 @@
     <el-container>
       <!-- 公共侧边栏 -->
       <el-aside class="aside" width="200px">
-        <el-menu default-active="2" class="el-menu-vertical-demo sider-menu" :unique-opened=true :router=true>
+        <el-menu :default-active="$route.name" class="el-menu-vertical-demo sider-menu" :unique-opened=true :router=true @select="menuFn">
           <!-- 1 -->
           <el-submenu :index="item1.order+''" v-for="(item1, i) in menusArr" :key="i">
             <template slot="title">
@@ -140,12 +140,26 @@ export default {
   //     this.$message.warning('请先登录')
   //   }
   // },
-  mounted () {
-    this.$router.push({
-      name: 'home'
-    })
-  },
+  // mounted () {
+  //   this.$router.push({
+  //     name: 'home'
+  //   })
+  // },
   methods: {
+    menuFn (index, indexPath) {
+      console.log(index) // users
+      console.log(indexPath) // [1, users]
+      // 也可以直接使用路由配置对象中的参数，它跟上面获取的最新的值是一样的效果
+      // 以上两个参数，其实在我们的路由配置中是有的，所以，我们可直接使用路由配置中的参数
+      // 获取当前点击的路由数据
+      // 注意：使用:default-active="$route.name",前提是路由配置中name和path是一样的。
+      console.log(this.$route.name)
+      // 注意：我们在菜单栏上绑定的事件menuFn根本没有用上。是因为，它的那两个参数跟我们路由配置对象中的
+      // 参数是一样的效果，所以，没必要用。如果用，可以把它重新赋值给一个值也行
+      // this.a = index
+      // 或者也可以直接赋值给路由配置对象
+      // this.$route.params.abc = index // 然后在上面的菜单上绑定该属性即可 :default-active="$route.params.abc"
+    },
     // 动态导航功能
     async getMenus () {
       const res = await this.$http.get(`menus`)

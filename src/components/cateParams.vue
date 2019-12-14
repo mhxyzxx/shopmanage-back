@@ -24,7 +24,7 @@
         <!-- 按钮默认是不能点击的 -->
         <el-button type="primary" class="set-btn" size="small" disabled>设置动态参数</el-button>
         <!-- 带展开功能的表格 -->
-        <el-table height="360px" border stripe :data="arrDy" style="width: 100%">
+        <el-table height="300px" border stripe :data="arrDy" style="width: 100%" @expand-change="expandFn">
           <!-- 序号 -->
           <el-table-column type="expand" width="100">
             <template slot-scope="scope">
@@ -35,7 +35,8 @@
               <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small"
                 @keyup.enter.native="handleInputConfirm(scope.row)" @blur="handleInputConfirm(scope.row)">
               </el-input>
-              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New
+                Tag</el-button>
             </template>
           </el-table-column>
           <el-table-column type="index" label="#" width="100"></el-table-column>
@@ -94,17 +95,32 @@ export default {
       // dynamicTags: ['标签一', '标签二', '标签三'],换成了我们自己的数组
       inputVisible: false,
       inputValue: ''
+      // inputVals: {} // 存放el-input的不同vals值
+      // inputVisibles: {}
+
     }
   },
   created () {
     this.getGoodsCate()
   },
   methods: {
+    // 让表格只能展开一行，其它行都关闭
+    expandFn (row, expandedRows) {
+      // // 需求：你想只展开一行，那么，你只需在expandedRows数组中永远只保存一个元素，删除上个元素就行
+      // // 展开第一个[a]
+      // // 如果[]length>1,展开第二个时[a,b],那么就删除上一个
+      if (expandedRows.length > 1) {
+        // console.log(expandedRows.length)
+        expandedRows.shift()
+        console.log(expandedRows)
+        console.log(expandedRows.length)
+      }
+    },
     // 获取三级商品分类的数据
     async getGoodsCate () {
       const res = await this.$http.get(`categories?type=3`)
       // console.log(res);
-      const { meta: { msg, status }, data } = res.data
+      const { meta: { status }, data } = res.data
       if (status === 200) {
         this.options = data
         // console.log(this.options)
@@ -128,7 +144,7 @@ export default {
         if (this.active === '1') {
           const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=many`)
           console.log(res)
-          const { meta: { msg, status }, data } = res.data
+          const { meta: { status }, data } = res.data
           if (status === 200) {
             this.arrDy = data
             console.log(this.arrDy)
@@ -136,12 +152,19 @@ export default {
             this.arrDy.forEach(item => {
               item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',')
             })
+
+            // 这里已经拿到动态数据了，根据动态数据的长度，来给多个el-input赋值
+            // for (let i = 0; i < this.arrDy.length; i++) {
+            //   this.inputVals['inputvalue' + i] = ''
+            //   // this.inputVisibles['inputvis' + i] = false
+            // }
+            // console.log(this.inputVals) // 拿到了不同的valus值，然后赋值给v-model即可。
           }
         }
         // 获取静态参数
         if (this.active === '2') {
           const res = await this.$http.get(`categories/${this.selectOptions[2]}/attributes?sel=only`)
-          const { meta: { msg, status }, data } = res.data
+          const { meta: { status }, data } = res.data
           if (status === 200) {
             this.arrStatic = data
             console.log(this.arrStatic)
@@ -176,13 +199,16 @@ export default {
     },
 
     showInput () {
+      // console.log(index, item)
       this.inputVisible = true
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus()
+        // this.$refs['list' + index].$refs['list' + index].input.focus()
       })
     },
     // 2.添加某个属性功能
     async handleInputConfirm (obj) {
+      // let inputValue = this.inputValue[index]
       let inputValue = this.inputValue
       if (inputValue) {
         obj.attr_vals.push(inputValue) // 重新修改了数组，是往数组中新添加了数据
@@ -191,6 +217,8 @@ export default {
       }
       this.inputVisible = false
       this.inputValue = ''
+      // this.inputVisible[index] = false
+      // this.inputValue[index] = ''
     }
   }
 }

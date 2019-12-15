@@ -20,6 +20,7 @@
       <el-table-column label="操作" width="180">
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-edit" circle size="mini" plain @click="showEditdia(scope.row)"></el-button>
+          <el-button type="warning" icon="el-icon-location" circle size="mini" plain @click="showPlace(scope.row)"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -38,16 +39,26 @@
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 地图弹窗 -->
+    <el-dialog title="快递信息" :visible.sync="dialogTableVisible" width="800px">
+      <!-- 第二种写法放在弹窗中 -->
+      <!-- 地图容器 -->
+      <div id="container"></div>
+    </el-dialog>
+    <!-- 第一种写法 -->
+    <!-- <div id="container"></div> -->
   </el-card>
 </template>
 
 <script>
 import CityArr from '@/assets/city_data2017_element.js'
 export default {
+  name: 'order',
   data () {
     return {
       list: [],
       dialogFormVisible: false,
+      dialogTableVisible: false,
       form: {
         address: ''
       },
@@ -66,6 +77,9 @@ export default {
   created () {
     this.getData()
   },
+  mounted () {
+    // this.baiduMap() // 当地图不在弹窗的时候，在这里调用
+  },
   methods: {
     async getData () {
       const res = await this.$http.get(`orders?pagenum=1&pagesize=10`)
@@ -75,10 +89,26 @@ export default {
     showEditdia () {
       this.catlist = CityArr
       this.dialogFormVisible = true
+    },
+    showPlace () {
+      this.dialogTableVisible = true
+      // 当地图在弹窗里时，在这里使用$nextTick初始化地图插件即可
+      this.$nextTick(() => {
+        this.baiduMap()
+      })
+    },
+    baiduMap () {
+      var map = new BMap.Map('container') // 创建地图实例
+      var point = new BMap.Point(116.404, 39.915) // 设置中心点坐标
+      map.centerAndZoom(point, 15) // 添加初始化中心点及地图层级
     }
   }
 }
 </script>
 
-<style>
+<style scope>
+#container {
+  width: 100%;
+  height: 500px;
+}
 </style>

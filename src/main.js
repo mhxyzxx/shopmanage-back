@@ -7,6 +7,11 @@ import ComBread from '@/components/comBread.vue'
 import HttpServer from '@/http.js'
 import router from './router'
 import moment from 'moment'
+// import BaiduMap from 'vue-baidu-map'
+// Vue.use(BaiduMap, {
+//   // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
+//   ak: 'jSW9wkana4KsLP3vheaDl1YXdIr4A9GA'
+// })
 
 // 所有的Vue插件都是这样使用的
 // 希望这样用

@@ -1,20 +1,21 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import VueRouter from 'vue-router'
 import { Message } from 'element-ui'
-import Login from '@/components/login.vue'
-import Home from '@/components/home.vue'
-import User from '@/components/user.vue'
-import Right from '@/components/right.vue'
-import Role from '@/components/roles.vue'
-import GoodsList from '@/components/goodsList.vue'
-import GoodAdd from '@/components/goodsAdd.vue'
-import CateParams from '@/components/cateParams.vue'
-import GoodsCate from '@/components/goodsCate.vue'
-import Order from '@/components/order.vue'
-import Reports from '@/components/reports.vue'
-Vue.use(Router)
+// 按需加载
+const Login = () => import('@/components/login.vue')
+const Home = () => import('@/components/home.vue')
+const User = () => import('@/components/user.vue')
+const Right = () => import('@/components/right.vue')
+const Role = () => import('@/components/roles.vue')
+const GoodsList = () => import('@/components/goodsList.vue')
+const GoodAdd = () => import('@/components/goodsAdd.vue')
+const CateParams = () => import('@/components/cateParams.vue')
+const GoodsCate = () => import('@/components/goodsCate.vue')
+const Order = () => import('@/components/order.vue')
+const Reports = () => import('@/components/reports.vue')
+Vue.use(VueRouter)
 
-const router = new Router({
+const router = new VueRouter({
   routes: [{
     path: '/',
     name: 'home',

@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+import ELEMENT from 'element-ui'
+// import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/base.css'
 import App from './App'
 import ComBread from '@/components/comBread.vue'
@@ -20,7 +20,7 @@ import moment from 'moment'
 // 我们可以去Vue官网查看编写插件的API文档
 Vue.use(HttpServer)
 
-Vue.use(ElementUI)
+Vue.use(ELEMENT)
 Vue.config.productionTip = false
 
 // 全局过滤器，处理日期格式

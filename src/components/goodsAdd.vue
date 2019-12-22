@@ -58,7 +58,7 @@
         </el-tab-pane>
         <el-tab-pane name="4" label="商品图片">
           <!-- 图片上传功能
-          1. action: 服务器目录路径(全路径网址)
+          1. action: 服务器目录路径(全路径网址)，就是你的图片要上传到哪个服务器资源里
           2. header:{} 请求头
           3. :on-success fn 上传成功的回调函数
           4. :on-remove fn 移除照片的回调函数
@@ -70,6 +70,8 @@
              我们知道任何非登录请求，都要授权(就是设置头部，加token)
              axios拦截器--config.headers['Authorization']='token'这是Axios里面设置请求头的--针对的是axios请求
              而我们需要写自己的请求头，如下：可参考element-ui组件中上传图片的一些参数说明
+             注意：这里的action="http://localhost:8888/api/private/v1/upload" 图片上传成功了，但并不真正的上传成功，
+             只是把图片放在了服务器的一个临时路径里。只有当我们"点击添加商品"按钮时，才是真正的上传图片。
            -->
           <el-form-item>
             <el-upload class="upload-demo" action="http://localhost:8888/api/private/v1/upload" :on-success="handleSuccess"
@@ -81,8 +83,25 @@
         <el-tab-pane name="5" label="商品内容">
           <el-form-item label="商品内容">
             <el-button class="add-btn" type="success" plain @click="addGoods()">添加商品</el-button>
+            <!-- 第一种方法：使用quill-editor富文本编辑器 -->
             <!-- 使用组件，由官网API可知quill-editor是表单元素，可使用v-model绑定数据 -->
-            <quillEditor class="quill-box" v-model="form.goods_introduce"></quillEditor>
+            <!-- <quillEditor class="quill-box" v-model="form.goods_introduce"></quillEditor> -->
+            <!-- 第二种方法：使用wangedit富文本编辑器 -->
+            <!-- <div ref="editor" style="text-align:left"></div> -->
+
+            <!-- 使用封装的富文本编辑器组件 -->
+            <!-- <RichTextEditor @editor-change="handleEditorChange"></RichTextEditor> -->
+
+            <!-- 在模板中$event就是事件参数，固定写法 -->
+            <!-- <RichTextEditor v-bind:content="form.goods_introduce" v-on:update:content="form.goods_introduce=$event"></RichTextEditor> -->
+            <!-- vue为了简化代码，提供了一个修饰符.sync ,下面这一句就表示了上面那两句，是一个语法糖
+            因为你绑定了一个:content,那么，它内部就会绑定一个update:contnet的事件名，用了.sync就不用自己去绑定事件了，它会自动
+            帮你绑定一个update:contnet的事件。其实，它也是的事件名加了：content也是为了区分。以免跟其它事件名冲突。
+            .sync 修饰符
+            自动根据 v-bind 的属性名监听一个叫 update:属性名 的事件
+            然后事件触发以后，它自动 formData.goods_introduce = 事件参数
+            -->
+            <RichTextEditor :content.sync="form.goods_introduce"></RichTextEditor>
           </el-form-item>
         </el-tab-pane>
       </el-tabs>
@@ -92,15 +111,21 @@
 </template>
 
 <script>
-// require styles
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
+// import 'quill/dist/quill.core.css'
+// import 'quill/dist/quill.snow.css'
+// import 'quill/dist/quill.bubble.css'
+// import { quillEditor } from 'vue-quill-editor'
 
-import { quillEditor } from 'vue-quill-editor'
+// import E from 'wangeditor' // 富文本编辑器
+// import { upload } from '@/api/index.js'
+// 说明：因为把富文本单独提取为一个单独的组件，上面这两句放在富文本组件中
+
+// 引入封装好的富文本编辑器,这里在局部引入，也在全局引入，这样其它组件都能使用
+import RichTextEditor from '@/components/RichTextEditor/index.vue'
 export default {
   components: {
-    quillEditor
+    // quillEditor
+    RichTextEditor
   },
   data () {
     return {
@@ -147,7 +172,47 @@ export default {
   created () {
     this.getGoodsCate()
   },
+  // mounted () {
+  // var _this = this
+  // var editor = new E(this.$refs.editor)
+  // 或者 var editor = new E( document.getElementById('editor') )
+  // 配置服务器端地址
+  // editor.customConfig.uploadImgServer = 'http://localhost:8888/api/private/v1/upload'
+  // editor.customConfig.customUploadImg = async (files, insert) => {
+  // files 是 input 中选中的文件列表
+  // insert 是获取图片 url 后，插入到编辑器的方法
+
+  // 上传代码返回结果之后，将图片插入到编辑器中
+  // insert(imgUrl)
+  // console.log(files)
+  // 自己发送上传图片的请求
+  // const fomData = new FormData()
+  // fomData.append('file', files[0])
+  // _this.$http.post('upload', fomData).then(res => {
+  //   console.log(res.data)
+  //   insert(`http://localhost:8888/${res.data.data.tmp_path}`)
+  // })
+
+  // 封装之后的上传图片（因封装的接口挂载在vue实例上，无法找到this，此功能作为了解）
+  // const { meta: { status }, data } = await upload(files)
+  // console.log(data)
+  // if (status === 200) {
+  //   insert(`http://localhost:8888/${data.tmp_path}`)
+  // }
+  // }
+  // 配置token
+  // editor.customConfig.uploadImgHeaders = {
+  //   Authorization: localStorage.getItem('token')
+  // }
+  // 配置自定义filename
+  // editor.customConfig.uploadFileName = 'file'
+  // editor.customConfig.onchange = function (html) {
+  //   _this.form.goods_introduce = html
+  // }
+  // editor.create()
+  // },
   methods: {
+
     // 获取三级商品分类的数据
     async getGoodsCate () {
       const res = await this.$http.get(`categories?type=3`)
@@ -241,6 +306,10 @@ export default {
         pic: response.data.tmp_path
       })
       // console.log(this.form.pics)
+    },
+    handleEditorChange (editContent) {
+      // console.log(editContent)
+      this.form.goods_introduce = editContent
     },
 
     // 添加商品
